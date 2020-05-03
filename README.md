@@ -21,3 +21,8 @@ composer require /two-factor-webauthn
  - $ `git clone `
  - $ `cd two-factor-webauthn`
  - $ `npm install && npm run dev`
+
+
+ToDo
+----
+ - dissect savesnine reg/auth process

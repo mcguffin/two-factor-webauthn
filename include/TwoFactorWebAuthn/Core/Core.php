@@ -1,16 +1,17 @@
 <?php
 /**
- *	@package TwoFactorWebAuthn\Core
+ *	@package TwoFactorWebauthn\Core
  *	@version 1.0.1
  *	2018-09-22
  */
 
-namespace TwoFactorWebAuthn\Core;
+namespace TwoFactorWebauthn\Core;
 
 if ( ! defined('ABSPATH') ) {
 	die('FU!');
 }
-use TwoFactorWebAuthn\Asset;
+use TwoFactorWebauthn\Asset;
+use TwoFactorWebauthn\Compat;
 
 class Core extends Plugin implements CoreInterface {
 
@@ -19,6 +20,7 @@ class Core extends Plugin implements CoreInterface {
 	 */
 	protected function __construct() {
 
+		add_action( 'plugins_loaded' , array( $this , 'init_compat' ), 0 );
 		add_action( 'init' , array( $this , 'init' ) );
 
 		add_action( 'wp_enqueue_scripts' , array( $this , 'enqueue_assets' ) );
@@ -36,6 +38,21 @@ class Core extends Plugin implements CoreInterface {
 	}
 
 
+	/**
+	 *	Load Compatibility classes
+	 *
+	 *  @action plugins_loaded
+	 */
+	public function init_compat() {
+
+		if ( ! function_exists( 'is_plugin_active_for_network' ) ) {
+		    require_once( ABSPATH . '/wp-admin/includes/plugin.php' );
+		}
+		if ( is_plugin_active( 'two-factor/two-factor.php' ) ) {
+			Compat\TwoFactor::instance();
+			// Two_Factor_Provider
+		}
+	}
 
 
 

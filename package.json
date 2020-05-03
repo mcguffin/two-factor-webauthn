@@ -17,7 +17,8 @@
     "init": "mkdir -p json/acf && mkdir -p json/post-type && mkdir -p json/taxonomy && mkdir -p src/php",
     "dev": "gulp dev",
     "i18n": "node src/run/json-i18n.js two-factor-webauthn",
-    "rollback": "git reset --hard HEAD~ && git push origin +master"
+    "rollback": "git reset --hard HEAD~ && git push origin +master",
+    "setversion": "PVER=$(node -e \"console.log(require('./package.json').version);\") && echo \"<?php return '$PVER';\" > ./include/version.php"
   },
   "browserslist": [
     "last 3 versions",
@@ -53,6 +54,7 @@
     "babelify": "^10.0.0",
     "browserify": "^16.3.0",
     "browserify-shim": "^3.8.14",
+    "cbor": "^5.0.2",
     "gulp": "^4.0.2",
     "event-stream": "^4.0.1",
     "gulp-autoprefixer": "^6.1.0",
@@ -90,6 +92,21 @@
       "git": {
         "user": "mcguffin",
         "remote": "git@github.com:mcguffin/two-factor-webauthn.git"
+      },
+      "compat": {
+        "components": {
+          "two-factor": {
+            "flags": []
+          }
+        },
+        "flags": []
+      },
+      "admin": {
+        "components": {},
+        "flags": [
+          "js",
+          "css"
+        ]
       }
     },
     "type": "plugin",
@@ -97,7 +114,7 @@
     "slug": "two-factor-webauthn",
     "prefix": "two_factor_webauthn",
     "textdomain": "two-factor-webauthn",
-    "namespace": "TwoFactorWebAuthn",
+    "namespace": "TwoFactorWebauthn",
     "author": "joern",
     "author_uri": "https://github.com/mcguffin",
     "year": 2020
@@ -108,5 +125,30 @@
   },
   "bugs": {
     "url": "https://github.com/mcguffin/two-factor-webauthn/issues"
+  },
+  "wporg": {
+    "steps": [
+      "build",
+      "git",
+      "github"
+    ],
+    "type": "plugin",
+    "build": {
+      "prebuild": [
+        "wp i18n make-pot . languages/two-factor-webauthn.pot --domain=two-factor-webauthn --exclude=tmp"
+      ],
+      "build": [
+        "npm run setversion",
+        "gulp build"
+      ]
+    },
+    "git": {
+      "host": "github.com",
+      "user": "mcguffin"
+    },
+    "wporg": {
+      "assets": ".wporg",
+      "svn_user": "podpirate"
+    }
   }
 }

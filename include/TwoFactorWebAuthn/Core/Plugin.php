@@ -1,11 +1,11 @@
 <?php
 /**
- *	@package TwoFactorWebAuthn\Core
+ *	@package TwoFactorWebauthn\Core
  *	@version 1.0.0
  *	2018-09-22
  */
 
-namespace TwoFactorWebAuthn\Core;
+namespace TwoFactorWebauthn\Core;
 
 if ( ! defined('ABSPATH') ) {
 	die('FU!');
@@ -22,8 +22,12 @@ class Plugin extends Singleton implements ComponentInterface {
 	/** @var array metadata from plugin file */
 	private $plugin_meta;
 
+	/** @var string plugin version */
+	private $_version;
+
 	/** @var string plugin components which might need upgrade */
 	private static $components = array(
+		'TwoFactorWebauthn\Compat\TwoFactor',
 	);
 
 	/**
@@ -103,7 +107,10 @@ class Plugin extends Singleton implements ComponentInterface {
 	 *	@return string current plugin version
 	 */
 	public function version() {
-		return $this->get_plugin_meta( 'Version' );
+		if ( is_null( $this->_version ) ) {
+			$this->_version = include_once $this->get_plugin_dir() . '/include/version.php';
+		}
+		return $this->_version;
 	}
 
 	/**
@@ -185,9 +192,10 @@ class Plugin extends Singleton implements ComponentInterface {
 
 		foreach ( self::$components as $component ) {
 			$comp = $component::instance();
-			$upgrade_result = $comp->upgrade( $new_version, $old_version );
-			$result['success'] 		&= $upgrade_result['success'];
-			$result['messages'][]	=  $upgrade_result['message'];
+			if ($upgrade_result = $comp->upgrade( $new_version, $old_version ) ) {
+				$result['success'] 		&= $upgrade_result['success'];
+				$result['messages'][]	=  $upgrade_result['message'];
+			}
 		}
 
 		return $result;

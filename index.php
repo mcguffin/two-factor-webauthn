@@ -43,10 +43,10 @@ if ( ! defined('ABSPATH') ) {
 }
 
 
+require_once __DIR__ . DIRECTORY_SEPARATOR . 'include/vendor/autoload.php';
 require_once __DIR__ . DIRECTORY_SEPARATOR . 'include/autoload.php';
 
 Core\Core::instance( __FILE__ );
 
 if ( is_admin() || defined( 'DOING_AJAX' ) ) {
 }
-

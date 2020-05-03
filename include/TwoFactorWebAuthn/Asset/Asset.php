@@ -1,17 +1,17 @@
 <?php
 /**
- *	@package TwoFactorWebAuthn\Asset
+ *	@package TwoFactorWebauthn\Asset
  *	@version 1.0.1
  *	2018-09-22
  */
 
-namespace TwoFactorWebAuthn\Asset;
+namespace TwoFactorWebauthn\Asset;
 
 if ( ! defined('ABSPATH') ) {
 	die('FU!');
 }
 
-use TwoFactorWebAuthn\Core;
+use TwoFactorWebauthn\Core;
 
 
 /**

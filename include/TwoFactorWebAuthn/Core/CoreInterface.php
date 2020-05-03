@@ -1,11 +1,11 @@
 <?php
 /**
- *	@package TwoFactorWebAuthn\Core
+ *	@package TwoFactorWebauthn\Core
  *	@version 1.0.0
  *	2018-09-22
  */
 
-namespace TwoFactorWebAuthn\Core;
+namespace TwoFactorWebauthn\Core;
 
 if ( ! defined('ABSPATH') ) {
 	die('FU!');
