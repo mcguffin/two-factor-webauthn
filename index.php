@@ -40,12 +40,14 @@ if ( ! defined('ABSPATH') ) {
 	die('FU!');
 }
 
+define( 'TWO_FACTOR_WEBAUTH_VERSION', include dirname( __FILE__ ).'/include/version.php' );
+
 require_once __DIR__ . DIRECTORY_SEPARATOR . 'vendor/autoload.php';
 require_once __DIR__ . DIRECTORY_SEPARATOR . 'include/autoload.php';
 
 add_filter('two_factor_providers', function( $providers ) {
 
-	$providers['Two_Factor_Webauthn'] = dirname( __FILE__ ) . '/providers/class.two-factor-webauthn.php'; // the fucken path...
+	$providers['Two_Factor_Webauthn'] = dirname( __FILE__ ) . '/providers/class.two-factor-webauthn.php';
 
 	return $providers;
 

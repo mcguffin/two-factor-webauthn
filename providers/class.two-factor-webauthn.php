@@ -55,13 +55,11 @@ class Two_Factor_Webauthn extends Two_Factor_Provider {
 
 		$this->key_store = TwoFactorWebauthn\Core\KeyStore::instance();
 
-		$core = TwoFactorWebauthn\Core\Core::instance();
-
 		wp_register_script(
 			'webauthn-login',
 			plugins_url( 'js/login/two-factor-webauthn.js', dirname( __FILE__ ) ),
 			[ 'jquery' ],
-			$core->version(),
+			TWO_FACTOR_WEBAUTH_VERSION,
 			true
 		);
 
@@ -69,7 +67,7 @@ class Two_Factor_Webauthn extends Two_Factor_Provider {
 			'webauthn-admin',
 			plugins_url( 'js/admin/two-factor-webauthn.js', dirname( __FILE__ ) ),
 			[ 'jquery' ],
-			$core->version(),
+			TWO_FACTOR_WEBAUTH_VERSION,
 			true
 		);
 
@@ -77,7 +75,7 @@ class Two_Factor_Webauthn extends Two_Factor_Provider {
 			'webauthn-admin',
 			plugins_url( 'css/admin/two-factor-webauthn.css', dirname( __FILE__ ) ),
 			array( ),
-			$core->version()
+			TWO_FACTOR_WEBAUTH_VERSION
 		);
 
 		add_action('wp_ajax_webauthn-register', [ $this, 'ajax_register' ] );
