@@ -49,6 +49,8 @@ const editKey = ( editLabel, opts ) => {
 	// focus and select
 	$(editLabel).on( 'blur', e => stopEditing( true ) )
 
+	$(editLabel).focus()
+
 	document.execCommand( 'selectAll', false, null );
 
 }
@@ -60,7 +62,16 @@ $(document).on( 'click', '#webauthn-register-key', e => {
 	const opts = JSON.parse( $(e.target).attr('data-create-options') );
 
 	register( opts, response => {
-		$('#webauthn-keys').append(response.html)
+
+		// 2DO: error handling
+
+		let $keyItem = $(response.html).appendTo('#webauthn-keys')
+		let $keyLabel = $keyItem.find('.webauthn-label')
+
+		editKey(
+			$keyLabel.get(0),
+			JSON.parse( $keyLabel.attr('data-action') )
+		);
 	});
 
 });
