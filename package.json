@@ -130,7 +130,7 @@
     "steps": [
       "build",
       "git",
-      "github"
+      "post"
     ],
     "type": "plugin",
     "build": {
@@ -139,7 +139,10 @@
       ],
       "build": [
         "npm run setversion",
-        "gulp build"
+        "gulp build",
+        "composer install --no-dev --no-progress --prefer-dist",
+        "sed -i '' 's/^\/vendor/#\/vendor/g' .gitignore",
+        "git add ."
       ]
     },
     "git": {
@@ -149,6 +152,12 @@
     "wporg": {
       "assets": ".wporg",
       "svn_user": "podpirate"
-    }
+    },
+    "post": [
+      "sed -i '' 's/^#\/vendor/\/vendor/g' .gitignore",
+      "git rm -r --cached vendor/",
+      "git add .",
+      "git commit -m 'post release'"
+    ]
   }
 }
