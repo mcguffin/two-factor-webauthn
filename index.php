@@ -2,11 +2,12 @@
 
 /*
 Plugin Name: Two Factor WebAuthn
-Plugin URI: http://wordpress.org/
+Plugin URI: https://github.com/mcguffin/two-factor-webauthn
 Description: Enter description here.
 Author: joern
 Version: 0.0.1
 Author URI: https://github.com/mcguffin
+GitHub Plugin URI: mcguffin/two-factor-webauthn
 License: GPL3
 Requires WP: 4.8
 Requires PHP: 5.6
