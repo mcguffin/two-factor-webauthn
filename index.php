@@ -36,18 +36,17 @@ Plugin was generated with Jörn Lund's WP Skelton
 https://github.com/mcguffin/wp-skeleton
 */
 
-
-namespace TwoFactorWebAuthn;
-
 if ( ! defined('ABSPATH') ) {
 	die('FU!');
 }
 
-
 require_once __DIR__ . DIRECTORY_SEPARATOR . 'vendor/autoload.php';
 require_once __DIR__ . DIRECTORY_SEPARATOR . 'include/autoload.php';
 
-Core\Core::instance( __FILE__ );
+add_filter('two_factor_providers', function( $providers ) {
 
-if ( is_admin() || defined( 'DOING_AJAX' ) ) {
-}
+	$providers['Two_Factor_Webauthn'] = dirname( __FILE__ ) . '/providers/class.two-factor-webauthn.php'; // the fucken path...
+
+	return $providers;
+
+} );

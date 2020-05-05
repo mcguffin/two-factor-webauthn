@@ -6,7 +6,9 @@ if ( ! defined('ABSPATH') ) {
 	die('FU!');
 }
 
-
+/**
+ *	Simple CRUD for keys
+ */
 class KeyStore extends Singleton {
 
 	const PUBKEY_USERMETA_KEY = '_two_factor_webauthn_pubkey';
