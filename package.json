@@ -141,7 +141,7 @@
         "npm run setversion",
         "gulp build",
         "composer install --no-dev --no-progress --prefer-dist",
-        "sed -i '' 's/^\/vendor/#\/vendor/g' .gitignore",
+        "sed -i '' 's/^\\/vendor/#\\/vendor/g' .gitignore",
         "git add ."
       ]
     },
@@ -154,7 +154,7 @@
       "svn_user": "podpirate"
     },
     "post": [
-      "sed -i '' 's/^#\/vendor/\/vendor/g' .gitignore",
+      "sed -i '' 's/^#\\/vendor/\\/vendor/g' .gitignore",
       "git rm -r --cached vendor/",
       "git add .",
       "git commit -m 'post release'"
