@@ -2,14 +2,14 @@
 # This file is distributed under the same license as the Two Factor WebAuthn plugin.
 msgid ""
 msgstr ""
-"Project-Id-Version: Two Factor WebAuthn 0.0.4\n"
+"Project-Id-Version: Two Factor WebAuthn 0.0.5\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/two-factor-webauthn\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2020-05-05T18:24:56+00:00\n"
+"POT-Creation-Date: 2020-05-05T18:29:26+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.4.0\n"
 "X-Domain: two-factor-webauthn\n"
@@ -34,42 +34,42 @@ msgstr ""
 msgid "https://github.com/mcguffin"
 msgstr ""
 
-#: providers/class.two-factor-webauthn.php:266
-#: providers/class.two-factor-webauthn.php:317
-#: providers/class.two-factor-webauthn.php:325
-#: providers/class.two-factor-webauthn.php:359
-#: providers/class.two-factor-webauthn.php:387
+#: providers/class.two-factor-webauthn.php:264
+#: providers/class.two-factor-webauthn.php:315
+#: providers/class.two-factor-webauthn.php:323
+#: providers/class.two-factor-webauthn.php:357
+#: providers/class.two-factor-webauthn.php:385
 msgid "Invalid request"
 msgstr ""
 
-#: providers/class.two-factor-webauthn.php:287
+#: providers/class.two-factor-webauthn.php:285
 msgid "New Key"
 msgstr ""
 
-#: providers/class.two-factor-webauthn.php:294
+#: providers/class.two-factor-webauthn.php:292
 msgid "Key already Exists"
 msgstr ""
 
-#: providers/class.two-factor-webauthn.php:330
+#: providers/class.two-factor-webauthn.php:328
 msgid "Invalid label"
 msgstr ""
 
-#: providers/class.two-factor-webauthn.php:335
+#: providers/class.two-factor-webauthn.php:333
 msgid "No such key"
 msgstr ""
 
-#: providers/class.two-factor-webauthn.php:346
+#: providers/class.two-factor-webauthn.php:344
 msgid "Could not edit key"
 msgstr ""
 
-#: providers/class.two-factor-webauthn.php:372
+#: providers/class.two-factor-webauthn.php:370
 msgid "Could not delete key"
 msgstr ""
 
-#: providers/class.two-factor-webauthn.php:427
+#: providers/class.two-factor-webauthn.php:425
 msgid "Test"
 msgstr ""
 
-#: providers/class.two-factor-webauthn.php:436
+#: providers/class.two-factor-webauthn.php:434
 msgid "Delete"
 msgstr ""
