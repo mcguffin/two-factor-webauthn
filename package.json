@@ -1,6 +1,6 @@
 {
   "name": "two-factor-webauthn",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "description": "",
   "private": true,
   "author": "joern",
@@ -102,6 +102,7 @@
     ],
     "type": "plugin",
     "build": {
+      "versionedFiles": null,
       "prebuild": [
         "wp i18n make-pot . languages/two-factor-webauthn.pot --domain=two-factor-webauthn --exclude=tmp"
       ],
