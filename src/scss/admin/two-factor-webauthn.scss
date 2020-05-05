@@ -1,2 +1,35 @@
 @import 'variables/index';
 @import 'mixins/index';
+
+.webauthn-key {
+	display: flex;
+	align-items: center;
+	.webauthn-action {
+		padding:3px;
+		border:1px solid rgba(0,0,0,0);
+	}
+	.webauthn-action-link {
+		flex:0;
+		&.-delete {
+			color:$wp-red;
+		}
+	}
+	.webauthn-label {
+		&:focus {
+			outline:none;
+		}
+		&[contenteditable="true"] {
+			 background-color: #fff;
+			 border-color:$wp-blue;
+			 flex:1;
+		}
+		& + .spinner {
+			margin-right:auto;
+			float:none;
+			visibility: visible;
+		}
+		& + .webauthn-action {
+			margin-left:auto;
+		}
+	}
+}

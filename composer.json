@@ -6,7 +6,8 @@
   "require": {
     "composer/installers": "~1.2",
     "spomky-labs/cbor-php": "^1.0",
-    "davidearl/webauthn": "dev-master"
+    "2tvenom/cborencode": "^1.0",
+    "phpseclib/phpseclib": "^2.0"
   },
   "prefer-stable": true,
   "prefer-dist": true,

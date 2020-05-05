@@ -2,16 +2,8 @@
 
 use TwoFactorWebauthn\Core;
 use TwoFactorWebauthn\Webauthn;
-// echo serialize((object) [
-// 	'key' => '-----BEGIN PUBLIC KEY-----
-// MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEbXiiRnuhWgfd/Ts1+UvfgU4HNizG
-// tPcDY7/sR4Mfl/yVX4bhIPb4Kaa/zGyViLc8BLCrwEQc0zhwrPTxUKSacQ==
-// -----END PUBLIC KEY-----
-// ',
-//  	'id' => 'hB/kM0DOk0dCERRCCJxkso7ZyB4AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==',
-// 	'rawId' => [226,128,105,131,15,194,232,235,25,217,233,170,112,21,18,86,149,240,240,24,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-// 	'name' => 'FAKED!'
-// ]);exit();
+
+
 /**
  *
  */
@@ -81,6 +73,7 @@ class Two_Factor_Webauthn extends Two_Factor_Provider {
 		);
 
 		add_action('wp_ajax_webauthn-register', [ $this, 'ajax_register' ] );
+		add_action('wp_ajax_webauthn-edit-key', [ $this, 'ajax_edit_key' ] );
 		add_action('wp_ajax_webauthn-delete-key', [ $this, 'ajax_delete_key' ] );
 		add_action('wp_ajax_webauthn-test-key', [ $this, 'ajax_test_key' ] );
 
@@ -217,8 +210,7 @@ class Two_Factor_Webauthn extends Two_Factor_Provider {
 	 */
 	public function is_available_for_user( $user ) {
 		// only works for currently logged in user
-		return true;
-		return intval( $user->id ) === intval( get_current_user_id() );
+		return function_exists('openssl_verify');
 	}
 
 
@@ -235,6 +227,7 @@ class Two_Factor_Webauthn extends Two_Factor_Provider {
 	public function user_options( $user ) {
 
 		wp_enqueue_script( 'webauthn-admin' );
+		wp_enqueue_style( 'webauthn-admin' );
 
 		$challenge = $this->webauthn->prepareChallengeForRegistration( $user->display_name, $user->user_login);
 		//$this->key_store
@@ -246,7 +239,7 @@ class Two_Factor_Webauthn extends Two_Factor_Provider {
 
 
 		update_user_meta( $user->ID, self::REGISTER_USERMETA, $challenge );
-
+		/*  [ (object) [ 'key' => str, 'id' => [ int, int, ...], 'label' => str ], ... ]  */
 		$keys = $this->key_store->get_keys( $user->ID );
 
 		?>
@@ -284,9 +277,10 @@ class Two_Factor_Webauthn extends Two_Factor_Provider {
 		try {
 			header('Content-Type: text/plain');
 			$keyJSON = $this->webauthn->register( $credential, '' );
-			$key = json_decode($keyJSON);
-			$this->key_store->save_key( $user_id, $key[0] );
-			error_log(var_export($key[0],true));
+			$key = array_pop( json_decode( $keyJSON ) );
+			$key->label = __( 'New Key','two-factor-webauthn' );
+			$key->md5id = md5( implode( '', array_map( 'chr', $key->id ) ) );
+			$this->key_store->save_key( $user_id, $key );
 		} catch( \Exception $err ) {
 			throw $err;
 		}
@@ -312,6 +306,40 @@ class Two_Factor_Webauthn extends Two_Factor_Provider {
 
 	}
 
+	public function ajax_edit_key() {
+
+		check_ajax_referer('webauthn-edit-key');
+
+		$user_id = get_current_user_id();
+
+		$payload = wp_unslash( $_REQUEST['payload'] );
+
+		if ( ! isset( $payload['md5id'], $payload['label'] ) ) {
+			wp_send_json_error( new WP_Error( 'webauthn', esc_html__( 'Invalid request', 'two-factor-webauthn' ) ) );
+		}
+		$new_label = sanitize_text_field( $payload['label'] );
+
+		if ( empty( $new_label ) ) {
+			wp_send_json_error( new WP_Error( 'webauthn', esc_html__( 'Invalid label', 'two-factor-webauthn' ) ) );
+		}
+
+		$key = $this->key_store->find_key( $user_id, $payload['md5id'] );
+		if ( ! $key ) {
+			wp_send_json_error( new WP_Error( 'webauthn', esc_html__( 'No such key', 'two-factor-webauthn' ) ) );
+		}
+
+		$key->label = $new_label;
+
+		if ( $this->key_store->save_key( $user_id, $key, $payload['md5id'] ) ) {
+			wp_send_json([
+				'success' => true,
+			]);
+		}
+
+		wp_send_json_error( new WP_Error( 'webauthn', esc_html__( 'Could not edit key', 'two-factor-webauthn' ) ) );
+
+	}
+
 	public function ajax_delete_key() {
 
 		check_ajax_referer('webauthn-delete-key');
@@ -327,6 +355,8 @@ class Two_Factor_Webauthn extends Two_Factor_Provider {
 		wp_send_json_error( new WP_Error( 'webauthn', esc_html__( 'Could not delete key', 'two-factor-webauthn' ) ) );
 
 	}
+
+
 
 	public function ajax_test_key() {
 
@@ -345,26 +375,35 @@ class Two_Factor_Webauthn extends Two_Factor_Provider {
 	}
 
 	private function get_key_item( $pubKey ) {
-		$keyId = md5( implode( '', array_map( 'chr', $pubKey->id ) ) );
 		$out = '<li class="webauthn-key">';
-		$out .= sprintf( '<span class="webauthn-key-name">%s</span>', esc_html( $keyId ) );
 		$out .= sprintf(
-			'<button type="button" class="button webauthn-action-button" data-action="%s">%s</span>',
+			'<span class="webauthn-label webauthn-action" data-action="%s" tabindex="1">%s</span>',
+
 			esc_attr( wp_json_encode( [
-				'action' => 'webauthn-delete-key',
-				'payload' => $keyId,
-				'_wpnonce' => wp_create_nonce('webauthn-delete-key')
+				'action' => 'webauthn-edit-key',
+				'payload' => $pubKey->md5id,
+				'_wpnonce' => wp_create_nonce('webauthn-edit-key')
 			] ) ),
-			esc_html__( 'Delete', 'two-factor-webauthn' )
+
+			esc_html( $pubKey->label )
 		);
 		$out .= sprintf(
-			'<button type="button" class="button webauthn-action-button" data-action="%s">%s</span>',
+			'<a type="button" class="webauthn-action webauthn-action-link" data-action="%s">%s</a>',
 			esc_attr( wp_json_encode( [
 				'action' => 'webauthn-test-key',
 				'payload' => $this->webauthn->prepareForLogin( json_encode( [ $pubKey ] ) ),
 				'_wpnonce' => wp_create_nonce('webauthn-test-key')
 			] ) ),
 			esc_html__( 'Test', 'two-factor-webauthn' )
+		);
+		$out .= sprintf(
+			'<a type="button" class="webauthn-action webauthn-action-link -delete" data-action="%s">%s</a>',
+			esc_attr( wp_json_encode( [
+				'action' => 'webauthn-delete-key',
+				'payload' => $pubKey->md5id,
+				'_wpnonce' => wp_create_nonce('webauthn-delete-key')
+			] ) ),
+			esc_html__( 'Delete', 'two-factor-webauthn' )
 		);
 		$out .= '</li>';
 		return $out;

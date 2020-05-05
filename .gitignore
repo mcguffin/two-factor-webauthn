@@ -49,15 +49,7 @@ node_modules
 # assets/dist
 
 # Composer
-#vendor/beberlei
-#vendor/bin
-#vendor/pheromone
-#vendor/phpcompatibility
-#vendor/squizlabs
 /vendor
-#!vendor/spomky-labs
-#!vendor/composer
-#!vendor/autoload.php
 
 # phpcs
 phpcs-report.txt

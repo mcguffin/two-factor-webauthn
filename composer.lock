@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "d4f9bd7f4f57dd07ef220f3b9e1d8445",
+    "content-hash": "43d0e45c2d011f1c08d7fb39ab1e2e51",
     "packages": [
         {
             "name": "2tvenom/cborencode",
@@ -245,46 +245,6 @@
                 }
             ],
             "time": "2020-04-07T06:57:05+00:00"
-        },
-        {
-            "name": "davidearl/webauthn",
-            "version": "dev-master",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/davidearl/webauthn.git",
-                "reference": "320ba9a27b9d8e42105b7dccdad91d848ed8c35a"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/davidearl/webauthn/zipball/320ba9a27b9d8e42105b7dccdad91d848ed8c35a",
-                "reference": "320ba9a27b9d8e42105b7dccdad91d848ed8c35a",
-                "shasum": ""
-            },
-            "require": {
-                "2tvenom/cborencode": "^1.0",
-                "php": ">=5.6.0",
-                "phpseclib/phpseclib": "~2.0"
-            },
-            "require-dev": {
-                "atoum/atoum": "^3.3"
-            },
-            "type": "library",
-            "autoload": {
-                "psr-4": {
-                    "Davidearl\\WebAuthn\\": "WebAuthn"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "David Earl"
-                }
-            ],
-            "description": "An implementation of webauthn in PHP on the server side (e.g Yubico 2 and Google Titan keys)",
-            "time": "2019-08-29T18:44:46+00:00"
         },
         {
             "name": "phpseclib/phpseclib",
@@ -707,9 +667,7 @@
     ],
     "aliases": [],
     "minimum-stability": "dev",
-    "stability-flags": {
-        "davidearl/webauthn": 20
-    },
+    "stability-flags": [],
     "prefer-stable": true,
     "prefer-lowest": false,
     "platform": [],

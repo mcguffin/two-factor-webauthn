@@ -1,6 +1,8 @@
 import $ from 'jquery'
 
-
+/**
+ *	Stolen from https://github.com/davidearl/webauthn
+ */
 function webauthnAuthenticate(key, cb){
 	var pk = JSON.parse(key);
 	var originalChallenge = pk.challenge;
@@ -45,6 +47,9 @@ function webauthnAuthenticate(key, cb){
 		});
 }
 
+/**
+ *	Stolen from https://github.com/davidearl/webauthn
+ */
 function webauthnRegister(key, callback){
 	key = JSON.parse(key);
 	key.publicKey.attestation = undefined;
@@ -116,9 +121,9 @@ const register = ( opts, callback ) => {
 			url: wp.ajax.settings.url,
 			method: 'post',
 			data: {
-				action: 'webauthn-register',
+				action: action,
 				payload: info,
-				_wpnonce: opts._wpnonce
+				_wpnonce: _wpnonce
 			},
 			success: callback
 		})
@@ -135,7 +140,7 @@ const login = ( opts, callback ) => {
 	})
 }
 
-const deleteKey = ( opts, callback ) => {
+const sendRequest = ( opts, callback ) => {
 
 	const { action, payload, _wpnonce } = opts;
 
@@ -144,7 +149,7 @@ const deleteKey = ( opts, callback ) => {
 		method: 'post',
 		data: {
 			action: action,
-			payload: info,
+			payload: payload,
 			_wpnonce: _wpnonce
 		},
 		success:callback
@@ -152,6 +157,10 @@ const deleteKey = ( opts, callback ) => {
 }
 
 
+const editKey = ( opts, callback ) => {
+
+}
+
 module.exports = {
-	register, login, deleteKey
+	register, login, sendRequest
 }
