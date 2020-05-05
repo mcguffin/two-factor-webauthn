@@ -29,4 +29,4 @@ ToDo
 ----
  - [ ] User-Admin: allow adding token for others
  - [ ] User-Admin: Save key tested state
- - [ ] Save key creation and usage time
+ - [ ] Save key creation and usage timestamp
