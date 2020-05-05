@@ -5,8 +5,13 @@
   "homepage": "https://github.com/mcguffin/two-factor-webauthn.git",
   "require": {
     "composer/installers": "~1.2",
-    "spomky-labs/cbor-php": "^1.0"
+    "spomky-labs/cbor-php": "^1.0",
+    "2tvenom/cborencode": "^1.0",
+    "phpseclib/phpseclib": "^2.0"
   },
+  "prefer-stable": true,
+  "prefer-dist": true,
+  "minimum-stability": "dev",
   "require-dev": {
     "squizlabs/php_codesniffer": "*",
     "wp-coding-standards/wpcs": "*",
