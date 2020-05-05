@@ -1,7 +1,15 @@
 Two Factor WebAuthn
-===============
+===================
 
-Plugin Description...
+WebAuthn module for the [Two Factor](https://github.com/WordPress/two-factor/) WordPress plugin.
+
+Incorporates a modified version of [WebAuthn by David Earl](https://github.com/davidearl/webauthn/).
+
+Current Status
+--------------
+This plugin is currently a proof of concept. Better not se it in a production environment.
+
+As the issue on [WebAuthn in Two Factor](https://github.com/WordPress/two-factor/issues/232) is still open.
 
 
 Installation
@@ -17,7 +25,8 @@ Installation
  - $ `cd two-factor-webauthn`
  - $ `npm install && npm run dev`
 
-
 ToDo
 ----
- - dissect savesnine reg/auth process
+ - [ ] User-Admin: allow adding token for others
+ - [ ] User-Admin: Save key tested state
+ - [ ] Save key creation and usage time
