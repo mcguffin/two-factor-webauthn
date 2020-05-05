@@ -1,4 +1,4 @@
-import { register, login, deleteKey } from 'webauthn'
+import { register, login, deleteKey } from 'davidearl-webauthn'
 
 (function($){
 
@@ -21,6 +21,7 @@ import { register, login, deleteKey } from 'webauthn'
 		if ( opts.action === 'webauthn-test-key' ) {
 			login( opts, function( response ) {
 				// send that crap to server
+				console.log(response)
 				$(btn).append('<span class="dashicons dashicons-yes-alt"></span>')
 			} );
 		} else if ( opts.action === 'webauthn-delete-key' ) {

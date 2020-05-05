@@ -11,5 +11,17 @@
   "src/js/lib/webauthn.js": [
     "js/admin/two-factor-webauthn.js",
     "js/login/two-factor-webauthn.js"
+  ],
+  "src/js/lib/davidearl-webauthn.js": [
+    "js/login/two-factor-webauthn.js",
+    "js/admin/two-factor-webauthn.js"
+  ],
+  "vendor/davidearl/webauthn/src/webauthnauthenticate.js": [
+    "js/login/two-factor-webauthn.js",
+    "js/admin/two-factor-webauthn.js"
+  ],
+  "vendor/davidearl/webauthn/src/webauthnregister.js": [
+    "js/login/two-factor-webauthn.js",
+    "js/admin/two-factor-webauthn.js"
   ]
 }
