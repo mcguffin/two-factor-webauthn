@@ -38,9 +38,15 @@ function webauthnAuthenticate(key, cb){
 			cb(true, JSON.stringify(info));
 		})
 		.catch(function (aErr) {
-			if (("name" in aErr) && (aErr.name == "AbortError" || aErr.name == "NS_ERROR_ABORT" ||
-									 aErr.name == "NotAllowedError")) {
-				cb(false, 'abort');
+			if ( "name" in aErr ) {
+				// change: distiguish between errors
+				if ( aErr.name == "NotAllowedError" ) {
+					cb( false, 'not-allowed' );
+				} else if ( aErr.name == "AbortError" || aErr.name == "NS_ERROR_ABORT" ) {
+					cb( false, 'abort' );
+				} else {
+					cb( false, aErr.toString() );
+				}
 			} else {
 				cb(false, aErr.toString());
 			}

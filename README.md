@@ -9,7 +9,7 @@ Current Status
 --------------
 This plugin is currently a proof of concept. Better not se it in a production environment.
 
-As the issue on [WebAuthn in Two Factor](https://github.com/WordPress/two-factor/issues/232) is still open.
+See this issue on [WebAuthn in Two Factor](https://github.com/WordPress/two-factor/issues/232).
 
 
 Installation
