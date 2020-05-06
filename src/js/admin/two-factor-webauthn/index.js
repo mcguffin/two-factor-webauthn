@@ -80,13 +80,17 @@ $(document).on('click','.webauthn-action', e => {
 	const opts = JSON.parse( $(e.target).attr('data-action') );
 	const btn = e.target;
 	const $keyEl = $(e.target).closest('.webauthn-key')
+	const { action, payload, _wpnonce } = opts
 
 	if ( opts.action === 'webauthn-test-key' ) {
 		e.preventDefault();
-		login( opts, function( response ) {
+		login( opts, result => {
 			// send that crap to server
-			console.log(response)
-			$(btn).append('<span class="dashicons dashicons-yes-alt"></span>')
+			console.log(result)
+			sendRequest( { action, payload: result.result, _wpnonce }, response => {
+				console.log( response )
+				$(btn).append('<span class="dashicons dashicons-yes-alt"></span>')
+			})
 		} );
 	} else if ( opts.action === 'webauthn-delete-key' ) {
 		e.preventDefault();

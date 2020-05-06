@@ -188,12 +188,22 @@ class Two_Factor_Webauthn extends Two_Factor_Provider {
 	 */
 	public function validate_authentication( $user ) {
 
-		$credential = wp_unslash( $_POST['webauthn_response'] );
+		$credential = json_decode( wp_unslash( $_POST['webauthn_response'] ) );
+
+		if ( ! is_object( $credential ) ) {
+			// json decode error
+			return false; // failed
+		}
 
 		$keys = $this->key_store->get_keys( $user->ID );
 
-		return $this->webauthn->authenticate( $credential, json_encode($keys) );
+		$auth = $this->webauthn->authenticate( $credential, $keys );
 
+		if ( $auth === false ) {
+			return false;
+		}
+
+		return true;
 	}
 
 
@@ -391,8 +401,11 @@ class Two_Factor_Webauthn extends Two_Factor_Provider {
 
 		$keys = $this->key_store->get_keys( $user_id );
 
+		$success = $this->webauthn->authenticate( json_decode( $credential ), $keys );
+
 		wp_send_json([
-			'success' => $this->webauthn->authenticate( $credential, json_encode($keys) ),
+			'success' => $success,
+			'message' => $this->webauthn->getLastError(),
 		]);
 
 	}

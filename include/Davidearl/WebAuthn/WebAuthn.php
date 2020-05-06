@@ -38,6 +38,14 @@ use phpseclib\Math\BigInteger;
 class WebAuthn
 {
 
+	private $last_call = null;
+	private $last_error = [
+		'authenticate' => false,
+		'prepareAuthenticate' => false,
+		'register' => false,
+		'prepareRegister' => false,
+	];
+
     const ES256 = -7;
     const RS256 = -257; // Windows Hello support
     /**
@@ -59,14 +67,18 @@ class WebAuthn
         }
     }
 
-    /**
-    * cancel all keys for a user
-    * @return string to store as the user's webauthn field in your database
-    */
-    public function cancel()
-    {
-        return '';
-    }
+	public function getLastError( string $realm = NULL ) {
+		if ( is_null( $realm ) ) {
+			$realm = $this->last_call;
+		}
+		if ( is_null( $realm ) ) {
+			return false;
+		}
+		if ( ! isset( $this->last_error[ $realm ] ) ) {
+			return false;
+		}
+		return $this->last_error[ $realm ];
+	}
 
     /**
     * generate a challenge ready for registering a hardware key, fingerprint or whatever:
@@ -262,99 +274,195 @@ class WebAuthn
     /**
     * validates a response for login or 2fa
     * requires info from the hardware via javascript given below
-    * @param string $info supplied to the PHP script via a POST, constructed by the Javascript given below, ultimately
+    * @param object $info supplied to the PHP script via POST, constructed by the Javascript given below, ultimately
     *        provided by the key
-    * @param string $userwebauthn the exisiting webauthn field for the user from your
-    *        database (it's actaully a JSON string, but that's entirely internal to
-    *        this code)
-    * @return boolean true for valid authentication or false for failed validation
+    * @param array $userKeys the exisiting webauthn field for the user from your
+    *        database
+    * @return object|null the matching key object from $userKeys for a valid authentication, null otherwise
     */
-    public function authenticate($info, $userwebauthn)
+    public function authenticate( object $info, array $userKeys )
     {
-        if (! is_string($info)) {
-            $this->oops('info must be a string', 1);
-        }
-        $info = json_decode($info);
-        if (empty($info)) {
-            $this->oops('info is not properly JSON encoded', 1);
-        }
-        $webauthn = empty($userwebauthn) ? array() : json_decode($userwebauthn);
 
-        /* find appropriate key from those stored for user (usually there'll only be one, but if
-        someone has, say, a physical yubikey on desktop and fingerprint reader on mobile, for
-        example, may be more than one. */
-        $key = null;
-        foreach ($webauthn as $candkey) {
-            if (implode(',', $candkey->id) != implode(',', $info->rawId)) {
-                continue;
-            }
-            $key = $candkey;
-            break;
-        }
-        if (empty($key)) {
-            $this->oops("no key with id ".implode(',', $info->rawId));
-        }
+		$this->last_call = __FUNCTION__;
 
-        /* cross-check challenge */
-        $oc = rtrim(strtr(base64_encode(self::arrayToString($info->originalChallenge)), '+/', '-_'), '=');
-        if ($oc != $info->response->clientData->challenge) {
-            $this->oops("challenge mismatch");
-        }
+		$this->last_error[ $this->last_call ];
 
-        /* cross check origin */
-        $origin = parse_url($info->response->clientData->origin);
-        if ($this->appid != $origin['host']) {
-            $this->oops("origin mismatch '{$info->response->clientData->origin}'");
-        }
+		// check info
+		if ( ! $this->validateAuthenticateInfo( $info ) ) {
+			$this->last_error['authenticate'] = 'invalid-authenticate-info';
+			return false;
+		}
 
-        if ($info->response->clientData->type != 'webauthn.get') {
-            $this->oops("type mismatch '{$info->response->clientData->type}'");
-        }
+		$key = $this->findKeyById( $info->rawId, $userKeys );
 
-        $bs = self::arrayToString($info->response->authenticatorData);
+		if ( false === $key ) {
+			$this->last_error['authenticate'] = 'no-matching-key';
+			return false;
+		}
+
+
+        $bs = self::arrayToString( $info->response->authenticatorData );
         $ao = (object)array();
 
-        $ao->rpIdHash = substr($bs, 0, 32);
-        $ao->flags = ord(substr($bs, 32, 1));
-        $ao->counter = substr($bs, 33, 4);
+        $ao->rpIdHash = substr( $bs, 0, 32 );
+        $ao->flags = ord( substr( $bs, 32, 1 ) );
+        $ao->counter = substr( $bs, 33, 4 );
 
-        $hashId = hash('sha256', $this->appid, true);
-        if ($hashId != $ao->rpIdHash) {
-            // log(bin2hex($hashId).' '.bin2hex($ao->rpIdHash));
-            $this->oops('cannot decode key response (2b)');
+        $hashId = hash( 'sha256', $this->appid, true );
+
+        if ( $hashId !== $ao->rpIdHash ) {
+			$this->last_error['authenticate'] = 'key-response-decode-hash-mismatch';
+			return false;
         }
 
         /* experience shows that at least one device (OnePlus 6T/Pie (Android phone)) doesn't set this,
         so this test would fail. This is not correct according to the spec, so  pragmatically it may
         have to be removed */
-        if (($ao->flags & 0x1) != 0x1) {
-            $this->oops('cannot decode key response (2c)');
+        if ( ( $ao->flags & 0x1 ) != 0x1 ) {
+			$this->last_error['authenticate'] = 'key-response-decode-flags-mismatch';
+			return false;
         } /* only TUP must be set */
 
         /* assemble signed data */
-        $clientdata = self::arrayToString($info->response->clientDataJSONarray);
-        $signeddata = $hashId . chr($ao->flags) . $ao->counter . hash('sha256', $clientdata, true);
+        $clientdata = self::arrayToString( $info->response->clientDataJSONarray );
+        $signeddata = $hashId . chr( $ao->flags ) . $ao->counter . hash( 'sha256', $clientdata, true );
 
-        if (count($info->response->signature) < 70) {
-            $this->oops('cannot decode key response (3)');
+        if (count( $info->response->signature ) < 70) {
+			$this->last_error['authenticate'] = 'key-response-decode-signature-invalid';
+			return false;
         }
 
         $signature = self::arrayToString($info->response->signature);
 
-        //$key = str_replace(chr(13), '', $key->key);
-        $key = $key->key;
-        // log($key);
-        switch (@openssl_verify($signeddata, $signature, $key, OPENSSL_ALGO_SHA256)) {
-        case 1:
-        return true; /* hooray, we're in */
-        case 0:
-        return false;
-        default:
-        $this->oops('cannot decode key response (4) '.openssl_error_string());
+		$verify_result = openssl_verify( $signeddata, $signature, $key->key, OPENSSL_ALGO_SHA256 );
+
+		if ( 1 === $verify_result ) {
+			return $key;
+		} else if ( 0 === $verify_result ) {
+			$this->last_error['authenticate'] = 'key-not-verfied';
+			return false;
+		}
+
+		$this->last_error['authenticate'] = openssl_error_string();
+
+		return false;
+
     }
 
-        return true;
-    }
+
+	/**
+	 *	Validates First argument of authenticate.
+	 *	@param object $info
+	 *	@return boolean
+	 */
+	private function validateAuthenticateInfo( object $info ) {
+		/*
+		$info
+			->rawId array				Uint8Array
+			->originalChallenge			Uint8Array
+			->response
+				->clientData
+					->challenge			base64string
+					->origin			string URL
+					->type 				string 'webauthn.get'
+				->clientDataJSONarray	Uint8Array
+				->authenticatorData		Uint8Array
+				->signature 			Uint8Array
+		*/
+		// check existence 1st level
+		if ( ! isset( $info->rawId, $info->originalChallenge, $info->response ) ) {
+			$this->last_error['authenticate'] = 'info-missing-property';
+			return false;
+		}
+		// check types 1st level
+		if ( ! is_array( $info->rawId ) || ! is_array( $info->originalChallenge ) || ! is_object( $info->response ) ) {
+			$this->last_error['authenticate'] = 'info-malformed-value';
+			return false;
+		}
+
+		// check existence 2nd level
+		if ( ! isset( $info->response->clientData, $info->response->clientDataJSONarray, $info->response->authenticatorData, $info->response->signature ) ) {
+			$this->last_error['authenticate'] = 'info-response-missing-property';
+			return false;
+		}
+		// check types 2nd level
+		if ( ! is_object( $info->response->clientData ) || ! is_array( $info->response->clientDataJSONarray ) || ! is_array( $info->response->authenticatorData ) || ! is_array( $info->response->signature ) ) {
+			$this->last_error['authenticate'] = 'info-response-malformed-value';
+			return false;
+		}
+
+		// check existence 3rd level
+		if ( ! isset(
+				$info->response->clientData->challenge,
+				$info->response->clientData->origin,
+				$info->response->clientData->type
+			)
+	 	) {
+			$this->last_error['authenticate'] = 'info-clientdata-missing-property';
+			return false;
+		}
+
+		// check types 3rd level
+		if (
+			! is_string( $info->response->clientData->challenge ) ||
+			! is_string( $info->response->clientData->origin ) ||
+			! is_string( $info->response->clientData->type )
+	 	) {
+			$this->last_error['authenticate'] = 'info-clientdata-malformed-value';
+			return false;
+		}
+
+		if ( $info->response->clientData->type != 'webauthn.get') {
+			$this->last_error['authenticate'] = "info-wrong-type-$info->response->clientData->type";
+			return false;
+        }
+
+
+		/* cross-check challenge */
+        if ( $info->response->clientData->challenge
+					!==
+			rtrim( strtr( base64_encode( self::arrayToString( $info->originalChallenge ) ), '+/', '-_'), '=')
+		) {
+			$this->last_error['authenticate'] = 'info-challenge-mismatch';
+			return false;
+        }
+
+		/* cross check origin */
+        $origin = parse_url( $info->response->clientData->origin );
+
+        if ( $this->appid !== $origin['host'] ) {
+			$this->last_error['authenticate'] = 'info-origin-mismatch';
+			return false;
+        }
+
+
+		return true;
+
+
+	}
+
+
+	/**
+	 *	Find key by ID
+	 *	@param array $keyId
+	 *	@param array $keys Contains key objects (object) [ 'id' => [ int, int, ...], 'key' => '-----BEGIN PUBLIC KEY--...' ]
+	 */
+	private function findKeyById( array $keyId, array $keys ) {
+
+		$keyIdString = implode( ',', $keyId );
+
+        foreach ( $keys as $key ) {
+			// check for key format
+			if ( ! is_object( $key ) || ! isset( $key->id ) || ! is_array( $key->id ) || ! isset( $key->key ) || ! is_string( $key->key ) ) {
+				continue;
+			}
+            if ( implode(',', $key->id ) === $keyIdString ) {
+                return $key;
+            }
+        }
+		return false;
+	}
+
 
     /**
     * convert an array of uint8's to a binary string
