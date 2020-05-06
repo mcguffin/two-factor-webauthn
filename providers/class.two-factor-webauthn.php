@@ -1,6 +1,6 @@
 <?php
 
-use Davidearl\Webauthn;
+use Davidearl\WebAuthn;
 use TwoFactorWebauthn\Core;
 
 
@@ -16,7 +16,7 @@ class Two_Factor_Webauthn extends Two_Factor_Provider {
 	 */
 	const LOGIN_USERMETA = '_two_factor_webauthn_login';
 
-	/** @var TwoFactorWebauthn\Webauthn\Webauthn */
+	/** @var Davidearl\WebAuthn\Webauthn */
 	protected $webauthn;
 
 	/** @var TwoFactorWebauthn\Core\KeyStore */
