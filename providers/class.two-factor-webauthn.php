@@ -1,7 +1,7 @@
 <?php
 
+use Davidearl\Webauthn;
 use TwoFactorWebauthn\Core;
-use TwoFactorWebauthn\Davidearl\Webauthn;
 
 
 /**
