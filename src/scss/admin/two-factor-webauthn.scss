@@ -4,12 +4,42 @@
 .webauthn-key {
 	display: flex;
 	align-items: center;
+	border-top:1px solid $wp-gray-dark;
+	&:last-of-type {
+		border-bottom:1px solid $wp-gray-dark;
+	}
+	.webauthn-label {
+		flex:1;
+	}
+	[data-tested="tested"] {
+		color: $wp-green;
+	}
+	[data-tested="fail"] {
+		color: $wp-red;
+		&::before {
+			content:$dashicon-warning;
+		}
+	}
+	[data-tested="untested"] {
+		color: $wp-gray-dark;
+		&::before {
+			content:$dashicon-yes;
+			border-radius:50%;
+			border:1px solid $wp-gray-dark;
+			font-size:16px;
+		}
+	}
 	.webauthn-action {
 		padding:3px;
 		border:1px solid rgba(0,0,0,0);
+		text-decoration:none;
+		white-space: nowrap;
 	}
 	.webauthn-action-link {
 		flex:0;
+		&.-test {
+
+		}
 		&.-delete {
 			color:$wp-red;
 		}
@@ -21,7 +51,6 @@
 		&[contenteditable="true"] {
 			 background-color: #fff;
 			 border-color:$wp-blue;
-			 flex:1;
 		}
 		& + .spinner {
 			margin-right:auto;

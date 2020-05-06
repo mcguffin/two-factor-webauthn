@@ -77,8 +77,9 @@ $(document).on( 'click', '#webauthn-register-key', e => {
 });
 
 $(document).on('click','.webauthn-action', e => {
-	const opts = JSON.parse( $(e.target).attr('data-action') );
-	const btn = e.target;
+	e.preventDefault();
+	const $btn = $(e.target).closest('.webauthn-action');
+	const opts = JSON.parse( $btn.attr('data-action') );
 	const $keyEl = $(e.target).closest('.webauthn-key')
 	const { action, payload, _wpnonce } = opts
 
@@ -88,8 +89,11 @@ $(document).on('click','.webauthn-action', e => {
 			// send that crap to server
 			console.log(result)
 			sendRequest( { action, payload: result.result, _wpnonce }, response => {
-				console.log( response )
-				$(btn).append('<span class="dashicons dashicons-yes-alt"></span>')
+				if ( response.success ) {
+					$btn.find('[data-tested]').attr('data-tested','tested')
+				} else {
+					$btn.find('[data-tested]').attr('data-tested','fail')
+				}
 			})
 		} );
 	} else if ( opts.action === 'webauthn-delete-key' ) {
@@ -98,7 +102,7 @@ $(document).on('click','.webauthn-action', e => {
 			// remove
 			if ( response.success ) {
 
-				$(btn).closest('.webauthn-key').remove();
+				$keyEl.remove();
 			}
 		} );
 	} if ( opts.action === 'webauthn-edit-key' ) {

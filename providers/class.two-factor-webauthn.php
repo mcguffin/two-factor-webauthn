@@ -199,7 +199,7 @@ class Two_Factor_Webauthn extends Two_Factor_Provider {
 			return false;
 		}
 		$auth->last_used = time();
-		$this->key_store->update_key( $user->ID, $auth, $auth->md5id );
+		$this->key_store->save_key( $user->ID, $auth, $auth->md5id );
 		delete_user_meta( $user->ID, self::LOGIN_USERMETA );
 
 		return true;
@@ -248,9 +248,13 @@ class Two_Factor_Webauthn extends Two_Factor_Provider {
 			<?php
 			foreach ( $keys as $key ) {
 				echo wp_kses( $this->get_key_item( $key ), [
-					'li'	=> [ 'id' => [], 'class' => [], ],
-					'span'	=> [ 'id' => [], 'class' => [], 'data-action' => [], 'tabindex' => [] ],
-					'a'		=> [ 'id' => [], 'class' => [], 'data-action' => [], 'tabindex' => [], 'href' => [] ],
+					'div'		=> [ 'id' => [], 'class' => [], 'tabindex' => [] ],
+					'ul'		=> [ 'id' => [], 'class' => [], ],
+					'li'		=> [ 'id' => [], 'class' => [], ],
+					'strong'	=> [ 'id' => [], 'class' => [], ],
+					'em'		=> [ 'id' => [], 'class' => [], ],
+					'span'		=> [ 'id' => [], 'class' => [], 'data-action' => [], 'data-tested' => [], 'tabindex' => [] ],
+					'a'			=> [ 'id' => [], 'class' => [], 'data-action' => [], 'tabindex' => [], 'href' => [] ],
 				] );
 			}
 			?>
@@ -296,14 +300,15 @@ class Two_Factor_Webauthn extends Two_Factor_Provider {
 			$key->last_used = false;
 			$key->tested = false;
 
+			if ( false !== $this->key_store->find_key( $user_id, $key->md5id ) ) {
+				wp_send_json_error( new WP_Error( 'webauthn', esc_html__( 'Key already Exists', 'two-factor-webauthn' ) ) );
+				exit();
+			}
+
 			$this->key_store->save_key( $user_id, $key );
 
 		} catch( \Exception $err ) {
 			throw $err;
-		}
-		if ( false !== $this->key_store->find_key( $user_id, $key->md5id ) ) {
-			wp_send_json_error( new WP_Error( 'webauthn', esc_html__( 'Key already Exists', 'two-factor-webauthn' ) ) );
-			exit();
 		}
 
 		wp_send_json([
@@ -422,9 +427,12 @@ class Two_Factor_Webauthn extends Two_Factor_Provider {
 	 *	@return string key HTML to be displayed in user options
 	 */
 	private function get_key_item( $pubKey ) {
+
 		$out = '<li class="webauthn-key">';
+
+		// info
 		$out .= sprintf(
-			'<span class="webauthn-label webauthn-action" data-action="%s" tabindex="1">%s</span>',
+			'<span class="webauthn-label webauthn-action" data-action="%1$s" tabindex="1">%2$s</span>',
 
 			esc_attr( wp_json_encode( [
 				'action' => 'webauthn-edit-key',
@@ -434,25 +442,48 @@ class Two_Factor_Webauthn extends Two_Factor_Provider {
 
 			esc_html( $pubKey->label )
 		);
+		// $out .= sprintf(
+		// 	'<li><strong>%s</strong> %s</li>',
+		// 	__( 'Created', 'two-factor-webauthn' ),
+		// 	date_i18n( get_option( 'date_format', 'r' ), $pubKey->created )
+		// );
+		// $out .= sprintf(
+		// 	'<li><strong>%s</strong> %s</li>',
+		// 	__( 'Last used', 'two-factor-webauthn' ),
+		// 	date_i18n( get_option( 'date_format', 'r' ), $pubKey->last_used )
+		// );
+
+
+		// actions
 		$out .= sprintf(
-			'<a href="#" class="webauthn-action webauthn-action-link" data-action="%s">%s</a>',
+			'<a href="#" class="webauthn-action webauthn-action-link -test" title="%1$s" data-action="%2$s" >
+				%1$s
+				<span class="dashicons dashicons-yes-alt" data-tested="%3$s"></span>
+			</a>',
+			esc_html__( 'Test', 'two-factor-webauthn' ),
 			esc_attr( wp_json_encode( [
 				'action' => 'webauthn-test-key',
 				'payload' => $this->webauthn->prepareAuthenticate( [ $pubKey ] ),
 				'_wpnonce' => wp_create_nonce('webauthn-test-key')
 			] ) ),
-			esc_html__( 'Test', 'two-factor-webauthn' )
+			$pubKey->tested ? 'tested' : 'untested'
 		);
 		$out .= sprintf(
-			'<a href="#" class="webauthn-action webauthn-action-link -delete" data-action="%s">%s</a>',
+			'<a href="#" class="webauthn-action webauthn-action-link -delete" title="%1$s" data-action="%2$s">
+				<span class="dashicons dashicons-trash"></span>
+				<span class="screen-reader-text">%1$s</span>
+			</a>',
+			esc_html__( 'Delete', 'two-factor-webauthn' ),
 			esc_attr( wp_json_encode( [
 				'action' => 'webauthn-delete-key',
 				'payload' => $pubKey->md5id,
 				'_wpnonce' => wp_create_nonce('webauthn-delete-key')
-			] ) ),
-			esc_html__( 'Delete', 'two-factor-webauthn' )
+			] ) )
 		);
 		$out .= '</li>';
+
+		// $out .= ;
+		// $out .= date_i18n( get_option( 'date_format', 'r' ), $pubKey->last_used );
 		return $out;
 	}
 
