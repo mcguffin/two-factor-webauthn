@@ -1,6 +1,6 @@
 <?php
 
-namespace TwoFactorWebauthn\Core;
+namespace TwoFactorWebAuthn\Core;
 
 if ( ! defined('ABSPATH') ) {
 	die('FU!');

@@ -21,12 +21,12 @@ function __autoload( $class ) {
 	$ds = DIRECTORY_SEPARATOR;
 	$top = substr( $class, 0, $pos );
 
-	if ( false === is_dir( __DIR__ .$ds . $top ) ) {
+	if ( false === is_dir( dirname( __FILE__ ) .$ds . $top ) ) {
 		// not our plugin.
 		return;
 	}
 
-	$file = __DIR__ . $ds . str_replace( '\\', $ds, $class ) . '.php';
+	$file = dirname( __FILE__ ) . $ds . str_replace( '\\', $ds, $class ) . '.php';
 
 	if ( file_exists( $file ) ) {
 		require_once $file;

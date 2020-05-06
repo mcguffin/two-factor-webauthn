@@ -1,7 +1,7 @@
 <?php
 
 use Davidearl\WebAuthn;
-use TwoFactorWebauthn\Core;
+use TwoFactorWebAuthn\Core;
 
 
 /**
@@ -19,7 +19,7 @@ class Two_Factor_Webauthn extends Two_Factor_Provider {
 	/** @var Davidearl\WebAuthn\Webauthn */
 	protected $webauthn;
 
-	/** @var TwoFactorWebauthn\Core\KeyStore */
+	/** @var TwoFactorWebAuthn\Core\KeyStore */
 	protected $key_store;
 
 	/**

@@ -42,8 +42,8 @@ if ( ! defined('ABSPATH') ) {
 
 define( 'TWO_FACTOR_WEBAUTH_VERSION', include dirname( __FILE__ ).'/include/version.php' );
 
-require_once __DIR__ . DIRECTORY_SEPARATOR . 'vendor/autoload.php';
 require_once __DIR__ . DIRECTORY_SEPARATOR . 'include/autoload.php';
+require_once __DIR__ . DIRECTORY_SEPARATOR . 'vendor/autoload.php';
 
 add_filter('two_factor_providers', function( $providers ) {
 
