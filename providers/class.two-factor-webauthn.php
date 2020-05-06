@@ -1,7 +1,7 @@
 <?php
 
 use TwoFactorWebauthn\Core;
-use TwoFactorWebauthn\Webauthn;
+use TwoFactorWebauthn\Davidearl\Webauthn;
 
 
 /**
@@ -44,9 +44,9 @@ class Two_Factor_Webauthn extends Two_Factor_Provider {
 	 */
 	protected function __construct() {
 
-		$this->webauthn = new Davidearl\WebAuthn\WebAuthn( $this->get_app_id() );
+		$this->webauthn = new WebAuthn\WebAuthn( $this->get_app_id() );
 
-		$this->key_store = TwoFactorWebauthn\Core\KeyStore::instance();
+		$this->key_store = Core\KeyStore::instance();
 
 		wp_register_script(
 			'webauthn-login',
