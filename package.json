@@ -82,7 +82,7 @@
     "slug": "two-factor-webauthn",
     "prefix": "two_factor_webauthn",
     "textdomain": "two-factor-webauthn",
-    "namespace": "TwoFactorWebauthn",
+    "namespace": "TwoFactorWebAuthn",
     "author": "joern",
     "author_uri": "https://github.com/mcguffin",
     "year": 2020
