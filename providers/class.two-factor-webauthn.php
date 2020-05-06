@@ -10,13 +10,6 @@ use TwoFactorWebauthn\Webauthn;
 class Two_Factor_Webauthn extends Two_Factor_Provider {
 
 	/**
-	 * The user meta registration key.
-	 *
-	 * @type string
-	 */
-	const REGISTER_USERMETA = '_two_factor_webauthn_register';
-
-	/**
 	 * The user meta login key.
 	 *
 	 * @type string
@@ -149,7 +142,7 @@ class Two_Factor_Webauthn extends Two_Factor_Provider {
 
 		try {
 			$keys = $this->key_store->get_keys( $user->ID );
-			$auth_opts = $this->webauthn->prepareForLogin( json_encode( $keys ) );
+			$auth_opts = $this->webauthn->prepareAuthenticate( $keys );
 			update_user_meta( $user->ID, self::LOGIN_USERMETA, $auth_opts );
 		} catch ( Exception $e ) {
 			?>
@@ -192,6 +185,7 @@ class Two_Factor_Webauthn extends Two_Factor_Provider {
 
 		if ( ! is_object( $credential ) ) {
 			// json decode error
+			error_log( 'credential not object' );
 			return false; // failed
 		}
 
@@ -200,8 +194,13 @@ class Two_Factor_Webauthn extends Two_Factor_Provider {
 		$auth = $this->webauthn->authenticate( $credential, $keys );
 
 		if ( $auth === false ) {
+			error_log( 'credential invalid' );
+			error_log( $this->webauthn->getLastError() );
 			return false;
 		}
+		$auth->last_used = time();
+		$this->key_store->update_key( $user->ID, $auth, $auth->md5id );
+		delete_user_meta( $user->ID, self::LOGIN_USERMETA );
 
 		return true;
 	}
@@ -229,16 +228,14 @@ class Two_Factor_Webauthn extends Two_Factor_Provider {
 		wp_enqueue_script( 'webauthn-admin' );
 		wp_enqueue_style( 'webauthn-admin' );
 
-		$challenge = $this->webauthn->prepareChallengeForRegistration( $user->display_name, $user->user_login);
-		//$this->key_store
+		$challenge = $this->webauthn->prepareRegister( $user->display_name, $user->user_login );
+
 		$createData = [
 			'action' => 'webauthn-register',
 			'payload' => $challenge,
 			'_wpnonce' => wp_create_nonce( 'webauthn-register' )
 		];
 
-
-		update_user_meta( $user->ID, self::REGISTER_USERMETA, $challenge );
 		/*  [ (object) [ 'key' => str, 'id' => [ int, int, ...], 'label' => str ], ... ]  */
 		$keys = $this->key_store->get_keys( $user->ID );
 
@@ -275,11 +272,8 @@ class Two_Factor_Webauthn extends Two_Factor_Provider {
 		}
 
 		$user_id = get_current_user_id();
-		//$challenge = get_user_meta( $user_id, self::REGISTER_USERMETA, true );
-		$credential = wp_unslash( $_REQUEST['payload'] );
 
-		// decode response
-		$cred = json_decode( $credential );
+		$credential = json_decode( wp_unslash( $_REQUEST['payload'] ) );
 
 		if ( JSON_ERROR_NONE !== json_last_error() ) {
 			// error couldn't decode
@@ -289,28 +283,34 @@ class Two_Factor_Webauthn extends Two_Factor_Provider {
 		$keys = $this->key_store->get_keys( $user_id );
 
 		try {
-			header('Content-Type: text/plain');
-			$keyJSON = $this->webauthn->register( $credential, '' );
-			$key = array_pop( json_decode( $keyJSON ) );
+
+			$key = $this->webauthn->register( $credential, '' );
+
+			if ( false === $key ) {
+				wp_send_json_error( new WP_Error( 'webauthn', $this->webauthn->getLastError() ) );
+			}
+
 			$key->label = __( 'New Key','two-factor-webauthn' );
 			$key->md5id = md5( implode( '', array_map( 'chr', $key->id ) ) );
+			$key->created = time();
+			$key->last_used = false;
+			$key->tested = false;
+
 			$this->key_store->save_key( $user_id, $key );
+
 		} catch( \Exception $err ) {
 			throw $err;
 		}
-		if ( false !== $this->key_store->find_key( $user_id, $pubKey->id ) ) {
+		if ( false !== $this->key_store->find_key( $user_id, $key->md5id ) ) {
 			wp_send_json_error( new WP_Error( 'webauthn', esc_html__( 'Key already Exists', 'two-factor-webauthn' ) ) );
 			exit();
 		}
-
-		delete_user_meta( $user_id, self::REGISTER_USERMETA );
 
 		wp_send_json([
 			'success' => true,
 			'html' => $this->get_key_item( $key ),//'<div>'.$pubKey->name.'</div>',
 			'pubKey' => $pubKey,
 		]);
-
 	}
 
 	/**
@@ -401,10 +401,16 @@ class Two_Factor_Webauthn extends Two_Factor_Provider {
 
 		$keys = $this->key_store->get_keys( $user_id );
 
-		$success = $this->webauthn->authenticate( json_decode( $credential ), $keys );
+		$key = $this->webauthn->authenticate( json_decode( $credential ), $keys );
+
+		if ( $key !== false ) {
+			// store key tested state
+			$key->tested = true;
+			$this->key_store->save_key( $user_id, $key, $key->md5id );
+		}
 
 		wp_send_json([
-			'success' => $success,
+			'success' => $key !== false,
 			'message' => $this->webauthn->getLastError(),
 		]);
 
@@ -432,7 +438,7 @@ class Two_Factor_Webauthn extends Two_Factor_Provider {
 			'<a href="#" class="webauthn-action webauthn-action-link" data-action="%s">%s</a>',
 			esc_attr( wp_json_encode( [
 				'action' => 'webauthn-test-key',
-				'payload' => $this->webauthn->prepareForLogin( json_encode( [ $pubKey ] ) ),
+				'payload' => $this->webauthn->prepareAuthenticate( [ $pubKey ] ),
 				'_wpnonce' => wp_create_nonce('webauthn-test-key')
 			] ) ),
 			esc_html__( 'Test', 'two-factor-webauthn' )

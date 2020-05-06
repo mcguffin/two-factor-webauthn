@@ -90,16 +90,16 @@ class WebAuthn
     *               this computer, but with any available authentication device, e.g. known to Windows Hello)
     * @return string pass this JSON string back to the browser
     */
-  public function prepareChallengeForRegistration($username, $userid, $crossPlatform=FALSE)
+  public function prepareRegister($username, $userid, $crossPlatform = FALSE)
     {
-        $result = (object)array();
+        $result = (object) [];
         $rbchallenge = self::randomBytes(16);
         $result->challenge = self::stringToArray($rbchallenge);
-        $result->user = (object)array();
+        $result->user = (object) [];
         $result->user->name = $result->user->displayName = $username;
         $result->user->id = self::stringToArray($userid);
 
-        $result->rp = (object)array();
+        $result->rp = (object) [];
         $result->rp->name = $result->rp->id = $this->appid;
 
         $result->pubKeyCredParams = [
@@ -113,8 +113,10 @@ class WebAuthn
             ]
         ];
 
-        $result->authenticatorSelection = (object)array();
-        if ($crossPlatform) { $result->authenticatorSelection->authenticatorAttachment = 'cross-platform'; }
+        $result->authenticatorSelection = (object) [];
+        if ( $crossPlatform ) {
+			$result->authenticatorSelection->authenticatorAttachment = 'cross-platform';
+		}
 
         $result->authenticatorSelection->requireResidentKey = false;
         $result->authenticatorSelection->userVerification = 'discouraged';
@@ -122,153 +124,101 @@ class WebAuthn
         $result->attestation = null;
         $result->timeout = 60000;
         $result->excludeCredentials = []; // No excludeList
-        $result->extensions = (object)array();
+        $result->extensions = (object) [];
         $result->extensions->exts = true;
 
-        return json_encode(array('publicKey'=>$result,
-        'b64challenge'=>rtrim(strtr(base64_encode($rbchallenge), '+/', '-_'), '=')));
+        return [
+			'publicKey' => $result,
+        	'b64challenge' => rtrim(strtr(base64_encode($rbchallenge), '+/', '-_'), '=')
+		];
     }
 
     /**
     * registers a new key for a user
     * requires info from the hardware via javascript given below
-    * @param string $info supplied to the PHP script via a POST, constructed by the Javascript given below, ultimately
+    * @param object $info supplied to the PHP script via a POST, constructed by the Javascript given below, ultimately
     *        provided by the key
     * @param string $userwebauthn the exisitng webauthn field for the user from your
     *        database (it's actaully a JSON string, but that's entirely internal to
     *        this code)
-    * @return string modified to store in the user's webauthn field in your database
+    * @return boolean|object user key
     */
-    public function register($info, $userwebauthn)
-    {
-        if (! is_string($info)) {
-            $this->oops('info must be a string', 1);
-        }
-        $info = json_decode($info);
-        if (empty($info)) {
-            $this->oops('info is not properly JSON encoded', 1);
-        }
-        if (empty($info->response->attestationObject)) {
-            $this->oops('no attestationObject in info', 1);
-        }
-        if (empty($info->rawId)) {
-            $this->oops('no rawId in info');
-        }
+    public function register( object $info ) {
+
+		$this->last_call = __FUNCTION__;
+
+		$this->last_error[ $this->last_call ] = false;
+
+		// check info
+		if ( false === $this->validateRegisterInfo( $info ) ) {
+			// error generated in validateRegisterInfo()
+			return false;
+		}
 
         /* check response from key and store as new identity. This is a hex string representing the raw CBOR
         attestation object received from the key */
 
-        $aos = self::arrayToString($info->response->attestationObject);
-        $ao = (object)(\CBOR\CBOREncoder::decode($aos));
-        if (empty($ao)) {
-            $this->oops('cannot decode key response (1)');
-        }
-        if (empty($ao->fmt)) {
-            $this->oops('cannot decode key response (2)');
-        }
-        if (empty($ao->authData)) {
-            $this->oops('cannot decode key response (3)');
-        }
-        $bs = $ao->authData->get_byte_string();
+		$attData = $this->parseAttestationObject( $info->response->attestationObject );
 
-        if ($ao->fmt == 'fido-u2f') {
-            $this->oops("cannot decode FIDO format responses, sorry");
-        } elseif ($ao->fmt != 'none' && $ao->fmt != 'packed') {
-            $this->oops('cannot decode key response (4)');
+		// check info
+		if ( false === $attData ) {
+			// error generated in parseAttestationObject()
+			return false;
+		}
+
+        if ( $attData->credId !== self::arrayToString( $info->rawId ) ) {
+			$this->last_error[ $this->last_call ] = 'ao-id-mismatch';
+			return false;
         }
 
-        $ao->rpIdHash = substr($bs, 0, 32);
-        $ao->flags = ord(substr($bs, 32, 1));
-        $ao->counter = substr($bs, 33, 4);
+        return (object) [
+			'key' => $attData->keyBytes,
+			'id' => $info->rawId,
+		];
 
-        $hashId = hash('sha256', $this->appid, true);
-        if ($hashId != $ao->rpIdHash) {
-            //log(bin2hex($hashId).' '.bin2hex($ao->rpIdHash));
-            $this->oops('cannot decode key response (5)');
-        }
-
-        if (! ($ao->flags & 0x41)) {
-            $this->oops('cannot decode key response (6)');
-        } /* TUP and AT must be set */
-
-        $ao->attData = (object)array();
-        $ao->attData->aaguid = substr($bs, 37, 16);
-        $ao->attData->credIdLen = (ord($bs[53])<<8)+ord($bs[54]);
-        $ao->attData->credId = substr($bs, 55, $ao->attData->credIdLen);
-        $cborPubKey  = substr($bs, 55+$ao->attData->credIdLen); // after credId to end of string
-
-        $ao->attData->keyBytes = self::COSEECDHAtoPKCS($cborPubKey);
-
-        $rawId = self::arrayToString($info->rawId);
-        if ($ao->attData->credId != $rawId) {
-            $this->oops('cannot decode key response (16)');
-        }
-
-        $publicKey = (object)array();
-        $publicKey->key = $ao->attData->keyBytes;
-        $publicKey->id = $info->rawId;
-        //log($publicKey->key);
-
-        if (empty($userwebauthn)) {
-            $userwebauthn = [$publicKey];
-        } else {
-            $userwebauthn = json_decode($userwebauthn);
-            $found = false;
-            foreach ($userwebauthn as $idx => $key) {
-                if (implode(',', $key->id) != implode(',', $publicKey->id)) {
-                    continue;
-                }
-                $userwebauthn[$idx]->key = $publicKey->key;
-                $found = true;
-                break;
-            }
-            if (! $found) {
-                array_unshift($userwebauthn, $publicKey);
-            }
-        }
-        $userwebauthn = json_encode($userwebauthn);
-        return $userwebauthn;
     }
 
     /**
     * generates a new key string for the physical key, fingerprint
     * reader or whatever to respond to on login
-    * @param string $userwebauthn the existing webauthn field for the user from your database
-    * @return string to pass to javascript webauthnAuthenticate
+    * @param array $userKeys the existing webauthn field for the user from your database
+    * @return boolean|object Object to pass to javascript webauthnAuthenticate or false on faliue
     */
-    public function prepareForLogin($userwebauthn)
+    public function prepareAuthenticate( array $userKeys = [] )
     {
-        $allow = (object)array();
-        $allow->type = 'public-key';
-        $allow->transports = array('usb','nfc','ble','internal');
-        $allow->id = null;
-        $allows = array();
-        if (! empty($userwebauthn)) {
-            foreach (json_decode($userwebauthn) as $key) {
-                $allow->id = $key->id;
-                $allows[] = clone $allow;
-            }
-        } else {
+		$allowKeyDefaults = [
+			'transports' =>  [ 'usb','nfc','ble','internal' ],
+			'type' => 'public-key',
+		];
+        $allows = [];
+		foreach ( $userKeys as $key) {
+			if ( $this->isValidKey( $key ) ) {
+				$allows[] = (object) ( [
+					'id' => $key->id,
+				] + $allowKeyDefaults );
+			}
+		}
+
+        if ( ! count( $allows ) ) {
             /* including empty user, so they can't tell whether the user exists or not (need same result each
             time for each user) */
-            // log("fabricating key");
-            $allow->id = array();
-            $rb = md5((string)time());
-            $allow->id = self::stringToArray($rb);
-            $allows[] = clone $allow;
+            $rb = md5( (string) time() );
+            $allows[] = (object) ([
+				'id' => self::stringToArray( $rb ),
+			] + $allowKeyDefaults);
         }
 
         /* generate key request */
-        $publickey = (object)array();
-        $publickey->challenge = self::stringToArray(self::randomBytes(16));
+        $publickey = (object) [];
+        $publickey->challenge = self::stringToArray( self::randomBytes(16) );
         $publickey->timeout = 60000;
         $publickey->allowCredentials = $allows;
         $publickey->userVerification = 'discouraged';
         $publickey->extensions = (object)array();
-        $publickey->extensions->txAuthSimple = 'Execute order 66';
-        $publickey->rpId = str_replace('https://', '', $this->appid);
+        // $publickey->extensions->txAuthSimple = 'Execute order 66';
+        $publickey->rpId = str_replace('https://', '', $this->appid );
 
-        return json_encode($publickey);
+        return $publickey;
     }
 
     /**
@@ -285,18 +235,18 @@ class WebAuthn
 
 		$this->last_call = __FUNCTION__;
 
-		$this->last_error[ $this->last_call ];
+		$this->last_error[ $this->last_call ] = false;
 
 		// check info
 		if ( ! $this->validateAuthenticateInfo( $info ) ) {
-			$this->last_error['authenticate'] = 'invalid-authenticate-info';
+//			$this->last_error['authenticate'] = 'invalid-authenticate-info';
 			return false;
 		}
 
 		$key = $this->findKeyById( $info->rawId, $userKeys );
 
 		if ( false === $key ) {
-			$this->last_error['authenticate'] = 'no-matching-key';
+			$this->last_error[ $this->last_call ] = 'no-matching-key';
 			return false;
 		}
 
@@ -311,7 +261,7 @@ class WebAuthn
         $hashId = hash( 'sha256', $this->appid, true );
 
         if ( $hashId !== $ao->rpIdHash ) {
-			$this->last_error['authenticate'] = 'key-response-decode-hash-mismatch';
+			$this->last_error[ $this->last_call ] = 'key-response-decode-hash-mismatch';
 			return false;
         }
 
@@ -319,7 +269,7 @@ class WebAuthn
         so this test would fail. This is not correct according to the spec, so  pragmatically it may
         have to be removed */
         if ( ( $ao->flags & 0x1 ) != 0x1 ) {
-			$this->last_error['authenticate'] = 'key-response-decode-flags-mismatch';
+			$this->last_error[ $this->last_call ] = 'key-response-decode-flags-mismatch';
 			return false;
         } /* only TUP must be set */
 
@@ -328,7 +278,7 @@ class WebAuthn
         $signeddata = $hashId . chr( $ao->flags ) . $ao->counter . hash( 'sha256', $clientdata, true );
 
         if (count( $info->response->signature ) < 70) {
-			$this->last_error['authenticate'] = 'key-response-decode-signature-invalid';
+			$this->last_error[ $this->last_call ] = 'key-response-decode-signature-invalid';
 			return false;
         }
 
@@ -337,17 +287,142 @@ class WebAuthn
 		$verify_result = openssl_verify( $signeddata, $signature, $key->key, OPENSSL_ALGO_SHA256 );
 
 		if ( 1 === $verify_result ) {
+			$this->last_error[ $this->last_call ] = false;
 			return $key;
 		} else if ( 0 === $verify_result ) {
-			$this->last_error['authenticate'] = 'key-not-verfied';
+			$this->last_error[ $this->last_call ] = 'key-not-verfied';
 			return false;
 		}
 
-		$this->last_error['authenticate'] = openssl_error_string();
+		$this->last_error[ $this->last_call ] = openssl_error_string();
 
 		return false;
 
     }
+
+	/**
+	 *	Parse and validate Attestation object
+	 *
+	 *	@param array $ao_arr Attestation Object byte array
+	 *	@return boolean|object attestedCredentialData false on failure
+	 *
+	 *	@see https://developer.mozilla.org/en-US/docs/Web/API/AuthenticatorAssertionResponse/authenticatorData
+	 */
+	private function parseAttestationObject( array $ao_arr ) {
+
+		//
+		$ao_cbor = self::arrayToString( $ao_arr );
+		$ao = (object)( \CBOR\CBOREncoder::decode( $ao_cbor ) );
+
+		// begin validation
+		if ( ! is_object( $ao ) ) {
+			$this->last_error[ $this->last_call ] = 'ao-not-object';
+			return false;
+		}
+
+        if ( empty( $ao ) ) {
+			$this->last_error[ $this->last_call ] = 'ao-empty';
+			return false;
+        }
+
+        if ( ! isset( $ao->fmt, $ao->authData ) ) {
+			$this->last_error[ $this->last_call ] = 'ao-missing-property';
+			return false;
+        }
+
+		if ( ! is_string( $ao->fmt ) ) {
+			$this->last_error[ $this->last_call ] = 'ao-fmt-invalid';
+			return false;
+        }
+		if ( ! ( $ao->authData instanceof \CBOR\Types\CBORByteString ) ) {
+			$this->last_error[ $this->last_call ] = 'ao-authdata-invalid';
+			return false;
+		}
+
+		if ( ! in_array( $ao->fmt, [ 'none', 'packed' ] ) ) {
+			$this->last_error[ $this->last_call ] = 'ao-fmt-unsupported';
+			return false;
+		}
+
+		$bs = $ao->authData->get_byte_string();
+
+		if ( empty( $bs ) ) {
+			$this->last_error[ $this->last_call ] = 'ao-authdata-empty';
+			return false;
+		}
+
+		//
+		$authData = (object) [
+			'rpIdHash' => substr($bs, 0, 32),
+			'flags' => ord(substr($bs, 32, 1)),
+			'signCount' => substr($bs, 33, 4),
+		];
+		//
+        // $ao->rpIdHash = substr($bs, 0, 32);
+        // $ao->flags = ord(substr($bs, 32, 1));
+        // $ao->signCount = substr($bs, 33, 4);
+
+		if ( ! ( $authData->flags & 0x41 ) ) {
+			$this->last_error[ $this->last_call ] = 'ao-flags-unsupported';
+			return false;
+        } /* TUP and AT must be set */
+
+
+        $hashId = hash('sha256', $this->appid, true);
+
+        if ( $hashId != $authData->rpIdHash ) {
+			$this->last_error[ $this->last_call ] = 'ao-appid-mismatch';
+			return false;
+        }
+
+		$attData = (object) [
+			'aaguid' => substr($bs, 37, 16),
+			'credIdLen' => ( ord( $bs[53] ) << 8 ) + ord( $bs[54] ),
+		];
+		$attData->credId = substr( $bs, 55, $attData->credIdLen );
+		$attData->keyBytes = self::COSEECDHAtoPKCS(
+			substr( $bs, 55 + $attData->credIdLen )
+		);
+
+		return $attData;
+
+	}
+
+	/**
+	 *	Validates First argument of authenticate.
+	 *	@param object $info
+	 *	@return boolean
+	 */
+	private function validateRegisterInfo( object $info ) {
+		/*
+		$info
+			->rawId					Uint8Array
+			->response
+				->attestationObject	Uint8Array : CBOR
+
+		*/
+		if ( ! isset( $info->rawId, $info->response ) ) {
+			$this->last_error[ $this->last_call ] = 'info-missing-property';
+			return false;
+		}
+		if ( ! is_array( $info->rawId ) || ! is_object( $info->response ) ) {
+			$this->last_error[ $this->last_call ] = 'info-malformed-property';
+			return false;
+		}
+		if ( ! isset( $info->response->attestationObject ) ) {
+			$this->last_error[ $this->last_call ] = 'info-response-missing-property';
+			return false;
+		}
+		if ( ! is_array( $info->response->attestationObject ) ) {
+			$this->last_error[ $this->last_call ] = 'info-response-malformed-property';
+			return false;
+		}
+
+		return true;
+
+	}
+
+
 
 
 	/**
@@ -371,23 +446,23 @@ class WebAuthn
 		*/
 		// check existence 1st level
 		if ( ! isset( $info->rawId, $info->originalChallenge, $info->response ) ) {
-			$this->last_error['authenticate'] = 'info-missing-property';
+			$this->last_error[ $this->last_call ] = 'info-missing-property';
 			return false;
 		}
 		// check types 1st level
 		if ( ! is_array( $info->rawId ) || ! is_array( $info->originalChallenge ) || ! is_object( $info->response ) ) {
-			$this->last_error['authenticate'] = 'info-malformed-value';
+			$this->last_error[ $this->last_call ] = 'info-malformed-value';
 			return false;
 		}
 
 		// check existence 2nd level
 		if ( ! isset( $info->response->clientData, $info->response->clientDataJSONarray, $info->response->authenticatorData, $info->response->signature ) ) {
-			$this->last_error['authenticate'] = 'info-response-missing-property';
+			$this->last_error[ $this->last_call ] = 'info-response-missing-property';
 			return false;
 		}
 		// check types 2nd level
 		if ( ! is_object( $info->response->clientData ) || ! is_array( $info->response->clientDataJSONarray ) || ! is_array( $info->response->authenticatorData ) || ! is_array( $info->response->signature ) ) {
-			$this->last_error['authenticate'] = 'info-response-malformed-value';
+			$this->last_error[ $this->last_call ] = 'info-response-malformed-value';
 			return false;
 		}
 
@@ -398,7 +473,7 @@ class WebAuthn
 				$info->response->clientData->type
 			)
 	 	) {
-			$this->last_error['authenticate'] = 'info-clientdata-missing-property';
+			$this->last_error[ $this->last_call ] = 'info-clientdata-missing-property';
 			return false;
 		}
 
@@ -408,12 +483,12 @@ class WebAuthn
 			! is_string( $info->response->clientData->origin ) ||
 			! is_string( $info->response->clientData->type )
 	 	) {
-			$this->last_error['authenticate'] = 'info-clientdata-malformed-value';
+			$this->last_error[ $this->last_call ] = 'info-clientdata-malformed-value';
 			return false;
 		}
 
 		if ( $info->response->clientData->type != 'webauthn.get') {
-			$this->last_error['authenticate'] = "info-wrong-type-$info->response->clientData->type";
+			$this->last_error[ $this->last_call ] = "info-wrong-type-$info->response->clientData->type";
 			return false;
         }
 
@@ -423,7 +498,7 @@ class WebAuthn
 					!==
 			rtrim( strtr( base64_encode( self::arrayToString( $info->originalChallenge ) ), '+/', '-_'), '=')
 		) {
-			$this->last_error['authenticate'] = 'info-challenge-mismatch';
+			$this->last_error[ $this->last_call ] = 'info-challenge-mismatch';
 			return false;
         }
 
@@ -431,7 +506,7 @@ class WebAuthn
         $origin = parse_url( $info->response->clientData->origin );
 
         if ( $this->appid !== $origin['host'] ) {
-			$this->last_error['authenticate'] = 'info-origin-mismatch';
+			$this->last_error[ $this->last_call ] = 'info-origin-mismatch';
 			return false;
         }
 
@@ -453,7 +528,7 @@ class WebAuthn
 
         foreach ( $keys as $key ) {
 			// check for key format
-			if ( ! is_object( $key ) || ! isset( $key->id ) || ! is_array( $key->id ) || ! isset( $key->key ) || ! is_string( $key->key ) ) {
+			if ( ! $this->isValidKey( $key ) ) {
 				continue;
 			}
             if ( implode(',', $key->id ) === $keyIdString ) {
@@ -461,6 +536,14 @@ class WebAuthn
             }
         }
 		return false;
+	}
+
+	/**
+	 *	@param object $key
+	 *	@return boolean
+	 */
+	private function isValidKey( $key ) {
+		 return is_object( $key ) && isset( $key->id ) && is_array( $key->id ) && isset( $key->key ) && is_string( $key->key );
 	}
 
 
