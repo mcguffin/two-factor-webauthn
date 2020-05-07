@@ -241,7 +241,7 @@ class Two_Factor_Webauthn extends Two_Factor_Provider {
 	 */
 	public function is_available_for_user( $user ) {
 		// only works for currently logged in user
-		return function_exists('openssl_verify');
+		return function_exists('openssl_verify') && count( $this->key_store->get_keys( $user->ID ) );
 	}
 
 
