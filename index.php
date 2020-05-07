@@ -52,3 +52,8 @@ add_filter('two_factor_providers', function( $providers ) {
 	return $providers;
 
 } );
+
+
+add_action('plugins_loaded', function() {
+	load_plugin_textdomain( 'two-factor-webauthn', false, dirname( plugin_basename( __FILE__ ) ) . '/languages' );
+});

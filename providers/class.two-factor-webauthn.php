@@ -157,7 +157,7 @@ class Two_Factor_Webauthn extends Two_Factor_Provider {
 			update_user_meta( $user->ID, self::LOGIN_USERMETA, 1 );
 		} catch ( Exception $e ) {
 			?>
-			<p><?php esc_html_e( 'An error occurred while creating authentication data.', 'two-factor' ); ?></p>
+			<p><?php esc_html_e( 'An error occurred while creating authentication data.', 'two-factor-webauthn' ); ?></p>
 			<?php
 			return null;
 		}
@@ -176,7 +176,7 @@ class Two_Factor_Webauthn extends Two_Factor_Provider {
 		wp_enqueue_script( 'webauthn-login' );
 
 		?>
-		<p><?php esc_html_e( 'Now insert (and tap) your Security Key.', 'two-factor' ); ?></p>
+		<p><?php esc_html_e( 'Please authenticate yourself.', 'two-factor-webauthn' ); ?></p>
 		<input type="hidden" name="webauthn_response" id="webauthn_response" />
 
 		<div class="webauthn-retry">

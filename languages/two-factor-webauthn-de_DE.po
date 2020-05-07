@@ -5,8 +5,8 @@ msgstr ""
 "Project-Id-Version: Two Factor WebAuthn 0.0.12\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/two-factor-"
 "webauthn\n"
-"POT-Creation-Date: 2020-05-07T15:24:15+00:00\n"
-"PO-Revision-Date: 2020-05-07 17:24+0200\n"
+"POT-Creation-Date: 2020-05-07T15:26:36+00:00\n"
+"PO-Revision-Date: 2020-05-07 17:32+0200\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: de_DE\n"
@@ -45,6 +45,15 @@ msgstr ""
 "Web Authentifizierung benötigt eine HTTPS-Verbindung. Bitte nutze eine "
 "Backup-Methode."
 
+#: providers/class.two-factor-webauthn.php:160
+msgid "An error occurred while creating authentication data."
+msgstr ""
+"Beim Erstellen der Authentifizierungsdaten ist ein Fehler aufgetreten."
+
+#: providers/class.two-factor-webauthn.php:179
+msgid "Please authenticate yourself."
+msgstr "Bitte authentifiziere dich."
+
 #: providers/class.two-factor-webauthn.php:184
 msgid "Failed to connect to Authenticator."
 msgstr "Konnte keine Verbindung zum Authentifizierer herstellen."
@@ -67,7 +76,7 @@ msgid ""
 "You can configure hardware authenticators like an USB token or your current "
 "device with the button below."
 msgstr ""
-"Hier kannst Du einen Hardware-Authentifizierer registrieren, z.B. ein USB-"
+"Hier kannst Du einen Hardware-Authentifizierer registrieren. Z.B. ein USB-"
 "Token oder Deinen Computer."
 
 #: providers/class.two-factor-webauthn.php:315
