@@ -217,7 +217,7 @@ gulp.task('watch', cb => {
 
 gulp.task('dev',gulp.series('dev:scss','dev:js','watch'));
 
-gulp.task('i18n', gulp.series( 'i18n:strings-from-json','i18n:make-pot','i18n:fix-pot','i18n:make-json'));
+gulp.task('i18n', gulp.series( 'i18n:strings-from-json','i18n:make-pot', /*'i18n:fix-pot','i18n:make-json'*/));
 
 gulp.task('build', gulp.series('build:js','build:scss', 'i18n'));
 
