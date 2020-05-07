@@ -271,8 +271,8 @@ class Two_Factor_Webauthn extends Two_Factor_Provider {
 			<?php esc_html_e( 'Requires an HTTPS connection.', 'two-factor' ); ?>
 		</p>
 
-		<div class="webauthn-supported">
-			<button class="button-secondary webauthn-supported" id="webauthn-register-key" data-create-options="<?php echo esc_attr( json_encode( $createData ) ) ?>">
+		<div class="webauthn-supported webauth-register">
+			<button class="button-secondary" id="webauthn-register-key" data-create-options="<?php echo esc_attr( json_encode( $createData ) ) ?>">
 				<?php esc_html_e('Register Key'); ?>
 			</button>
 		</div>

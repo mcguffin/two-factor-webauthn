@@ -1,9 +1,12 @@
 import $ from 'jquery'
 
+
+
+
 /**
  *	Stolen from https://github.com/davidearl/webauthn
  */
-function webauthnAuthenticate( pubKeyAuth, cb ) {
+function webauthnAuthenticate( pubKeyAuth, callback ) {
 
 	const originalChallenge = pubKeyAuth.challenge;
 	const pk = Object.assign( {}, pubKeyAuth )
@@ -40,7 +43,7 @@ function webauthnAuthenticate( pubKeyAuth, cb ) {
 					signature: sig
 				}
 			};
-			cb( true, JSON.stringify( info ) );
+			callback( true, JSON.stringify( info ) );
 		})
 		.catch( err => {
 			console.log(err)
@@ -67,19 +70,9 @@ function webauthnAuthenticate( pubKeyAuth, cb ) {
 
 			*/
 			if ( "name" in err ) {
-				console.log(typeof err)
-				console.log(err.name)
-				console.log(err.message)
-				// change: distiguish between errors
-				if ( err.name == "NotAllowedError" ) {
-					cb( false, 'not-allowed' );
-				} else if ( err.name == "AbortError" || err.name == "NS_ERROR_ABORT" ) {
-					cb( false, 'abort' );
-				} else {
-					cb( false, err.toString() );
-				}
+				callback( false, err.name + ': ' + err.message );
 			} else {
-				cb( false, err.toString() );
+				callback( false, err.toString() );
 			}
 		});
 }
@@ -134,15 +127,8 @@ function webauthnRegister( key, callback ){
 			callback(true, JSON.stringify(info));
 		})
 		.catch( err => {
-			console.log(err)
-
 			if ( "name" in err ) {
-				console.log(err.name)
-				if (err.name == "AbortError" || err.name == "NS_ERROR_ABORT") {
-					callback( false, 'abort' );
-				} else {
-					callback( false, err.name );
-				}
+				callback( false, err.name + ': ' + err.message );
 			} else {
 				callback( false, err.toString() );
 			}
@@ -160,7 +146,7 @@ const register = ( opts, callback ) => {
 	const { action, payload, _wpnonce } = opts;
 
 	webauthnRegister( payload, (success,info) => {
-		if ( response.success ) {
+		if ( success ) {
 			$.ajax({
 				url: wp.ajax.settings.url,
 				method: 'post',
@@ -172,7 +158,7 @@ const register = ( opts, callback ) => {
 				success: callback
 			})
 		} else {
-			callback( { success:false, error:info } )
+			callback( { success:false, message:info } )
 		}
 	})
 }
@@ -183,7 +169,12 @@ const login = ( opts, callback ) => {
 	const { action, payload, _wpnonce } = opts;
 
 	webauthnAuthenticate( payload, ( success, info ) => {
-		callback( { success, result: info } )
+		if ( success ) {
+			callback( { success:true, result: info } )
+		} else {
+			callback( { success:false, message: info } )
+		}
+
 	})
 }
 

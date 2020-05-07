@@ -59,6 +59,8 @@ $(document).on( 'click', '#webauthn-register-key', e => {
 
 	e.preventDefault();
 
+	$(e.target).next('.webauthn-error').remove()
+
 	const opts = JSON.parse( $(e.target).attr('data-create-options') );
 
 	register( opts, response => {
@@ -72,7 +74,7 @@ $(document).on( 'click', '#webauthn-register-key', e => {
 				JSON.parse( $keyLabel.attr('data-action') )
 			);
 		} else {
-			$(`<span class="description">${response.info}</span>`).insertAfter('#webauthn-register-key')
+			$(`<span class="webauthn-error description">${response.message}</span>`).insertAfter('#webauthn-register-key')
 		}
 	});
 
@@ -86,13 +88,16 @@ if ( isWebauthnSupported ) {
 		const $keyEl = $(e.target).closest('.webauthn-key')
 		const { action, payload, _wpnonce } = opts
 
+
+
 		if ( opts.action === 'webauthn-test-key' ) {
 			e.preventDefault();
+			$keyEl.find('.notice').remove();
 			login( opts, result => {
 				// send that crap to server
-				console.log(result)
+
 				if ( ! result.success ) {
-					$keyEl.append(`<div class="notice notice-inline notice-warning">Error: ${result.result}</div>`)
+					$keyEl.append(`<div class="notice notice-inline notice-warning">${result.message}</div>`)
 					return;
 				}
 				sendRequest( { action, payload: result.result, _wpnonce }, response => {
@@ -100,6 +105,7 @@ if ( isWebauthnSupported ) {
 						$btn.find('[data-tested]').attr('data-tested','tested')
 					} else {
 						$btn.find('[data-tested]').attr('data-tested','fail')
+						$keyEl.append(`<div class="notice notice-inline notice-error">${response.message}</div>`)
 					}
 				})
 			} );

@@ -1,6 +1,14 @@
 @import 'variables/index';
 @import 'mixins/index';
 
+.webauth-register {
+	display: flex;
+	align-items: center;
+	.webauthn-error {
+		margin-left: 13px;
+	}
+}
+
 .webauthn-key {
 	display: flex;
 	flex-wrap: wrap;
