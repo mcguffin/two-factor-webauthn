@@ -1,18 +1,21 @@
-# Copyright (C) 2020 Jörn Lund
-# This file is distributed under the same license as the Two Factor Web Authentification plugin.
+# Copyright (C) 2020 joern
+# This file is distributed under the same license as the Two Factor WebAuthn plugin.
 msgid ""
 msgstr ""
-"Project-Id-Version: Two Factor Web Authentification 0.0.12\n"
-"Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/two-factor-webauthn\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language-Team: LANGUAGE <LL@li.org>\n"
+"Project-Id-Version: Two Factor WebAuthn 0.0.12\n"
+"Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/two-factor-"
+"webauthn\n"
+"POT-Creation-Date: 2020-05-07T15:24:15+00:00\n"
+"PO-Revision-Date: 2020-05-07 17:25+0200\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"Language: de_DE\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2020-05-07T15:24:15+00:00\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"X-Generator: WP-CLI 2.4.0\n"
+"X-Generator: Poedit 2.3\n"
 "X-Domain: two-factor-webauthn\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
 #. Plugin Name of the plugin
 msgid "Two Factor Web Authentification"
@@ -35,29 +38,37 @@ msgid "https://github.com/mcguffin"
 msgstr ""
 
 #: providers/class.two-factor-webauthn.php:148
-msgid "Web Authentication requires an HTTPS connection. Please use an alternative 2nd factor method."
+msgid ""
+"Web Authentication requires an HTTPS connection. Please use an alternative "
+"2nd factor method."
 msgstr ""
+"Web Authentifizierung benötigt eine HTTPS-Verbindung. Bitte wählen Sie eine "
+"Backup-Methode."
 
 #: providers/class.two-factor-webauthn.php:184
 msgid "Failed to connect to Authenticator."
-msgstr ""
+msgstr "Konnte keine Verbindung zum Authentifizierer herstellen."
 
 #: providers/class.two-factor-webauthn.php:186
 msgid "Try again"
-msgstr ""
+msgstr "Erneut versuchen"
 
 #: providers/class.two-factor-webauthn.php:193
 #: providers/class.two-factor-webauthn.php:283
 msgid "Your Browser does not support WebAuthn."
-msgstr ""
+msgstr "Ihr Browser unterstützt leider kein WebAuthn."
 
 #: providers/class.two-factor-webauthn.php:194
 msgid "Please use a backup method."
-msgstr ""
+msgstr "Bitte wählen Sie eine Backup-Methode."
 
 #: providers/class.two-factor-webauthn.php:271
-msgid "You can configure hardware authenticators like an USB token or your current device with the button below."
+msgid ""
+"You can configure hardware authenticators like an USB token or your current "
+"device with the button below."
 msgstr ""
+"Hier können Sie einen Hardware-Authentifizierer registrieren, z.B. ein USB-"
+"Token oder Ihren Computer."
 
 #: providers/class.two-factor-webauthn.php:315
 #: providers/class.two-factor-webauthn.php:373
@@ -65,40 +76,43 @@ msgstr ""
 #: providers/class.two-factor-webauthn.php:415
 #: providers/class.two-factor-webauthn.php:443
 msgid "Invalid request"
-msgstr ""
+msgstr "Ungültige Anfrage"
 
 #: providers/class.two-factor-webauthn.php:328
 msgid "Invalid credential"
-msgstr ""
+msgstr "Ungültige Zugangsdaten"
 
 #: providers/class.two-factor-webauthn.php:340
 msgid "New Device"
-msgstr ""
+msgstr "Neues Gerät"
 
 #: providers/class.two-factor-webauthn.php:347
 msgid "Device already Exists"
-msgstr ""
+msgstr "Schlüssel existiert bereits"
 
 #: providers/class.two-factor-webauthn.php:386
 msgid "Invalid label"
-msgstr ""
+msgstr "Ungültige Beschriftung"
 
 #: providers/class.two-factor-webauthn.php:391
 msgid "No such key"
-msgstr ""
+msgstr "Kein Schlüssel gefunden"
 
 #: providers/class.two-factor-webauthn.php:402
 msgid "Could not edit key"
-msgstr ""
+msgstr "Konnte Schlüssel nicht speichern"
 
 #: providers/class.two-factor-webauthn.php:428
 msgid "Could not delete key"
-msgstr ""
+msgstr "Konnte Schlüssel nicht löschen"
 
 #: providers/class.two-factor-webauthn.php:506
 msgid "Test"
-msgstr ""
+msgstr "Testen"
 
 #: providers/class.two-factor-webauthn.php:519
 msgid "Delete"
-msgstr ""
+msgstr "Löschen"
+
+#~ msgid "Requires an HTTPS connection."
+#~ msgstr "Erfordert eine HTTPS-Verbindung."

@@ -126,7 +126,7 @@ class Two_Factor_Webauthn extends Two_Factor_Provider {
 	 * @return string
 	 */
 	public function get_label() {
-		return _x( 'WebAuthn', 'Provider Label', 'bsb-two-factor' );
+		return _x( 'Web Authentication (FIDO2)', 'Provider Label', 'bsb-two-factor' );
 	}
 
 	/**
@@ -145,7 +145,7 @@ class Two_Factor_Webauthn extends Two_Factor_Provider {
 		// U2F doesn't work without HTTPS.
 		if ( ! is_ssl() ) {
 			?>
-			<p><?php esc_html_e( 'U2F requires an HTTPS connection. Please use an alternative 2nd factor method.', 'two-factor' ); ?></p>
+			<p><?php esc_html_e( 'Web Authentication requires an HTTPS connection. Please use an alternative 2nd factor method.', 'two-factor-webauthn' ); ?></p>
 			<?php
 
 			return;
@@ -268,12 +268,12 @@ class Two_Factor_Webauthn extends Two_Factor_Provider {
 
 		?>
 		<p>
-			<?php esc_html_e( 'Requires an HTTPS connection.', 'two-factor' ); ?>
+			<?php esc_html_e( 'You can configure hardware authenticators like an USB token or your current device with the button below.', 'two-factor-webauthn' ); ?>
 		</p>
 
 		<div class="webauthn-supported webauth-register">
 			<button class="button-secondary" id="webauthn-register-key" data-create-options="<?php echo esc_attr( json_encode( $createData ) ) ?>">
-				<?php esc_html_e('Register Key'); ?>
+				<?php esc_html_e('Register Device'); ?>
 			</button>
 		</div>
 
@@ -337,14 +337,14 @@ class Two_Factor_Webauthn extends Two_Factor_Provider {
 				wp_send_json_error( new WP_Error( 'webauthn', $this->webauthn->getLastError() ) );
 			}
 
-			$key->label = __( 'New Key','two-factor-webauthn' );
+			$key->label = __( 'New Device','two-factor-webauthn' );
 			$key->md5id = md5( implode( '', array_map( 'chr', $key->id ) ) );
 			$key->created = time();
 			$key->last_used = false;
 			$key->tested = false;
 
 			if ( false !== $this->key_store->find_key( $user_id, $key->md5id ) ) {
-				wp_send_json_error( new WP_Error( 'webauthn', esc_html__( 'Key already Exists', 'two-factor-webauthn' ) ) );
+				wp_send_json_error( new WP_Error( 'webauthn', esc_html__( 'Device already Exists', 'two-factor-webauthn' ) ) );
 				exit();
 			}
 

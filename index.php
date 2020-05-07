@@ -1,10 +1,10 @@
 <?php
 
 /*
-Plugin Name: Two Factor WebAuthn
+Plugin Name: Two Factor Web Authentification
 Plugin URI: https://github.com/mcguffin/two-factor-webauthn
-Description: Enter description here.
-Author: joern
+Description: Web Authentication for the Two Factor WordPress Plugin
+Author: Jörn Lund
 Version: 0.0.12
 Author URI: https://github.com/mcguffin
 GitHub Plugin URI: mcguffin/two-factor-webauthn

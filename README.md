@@ -11,11 +11,6 @@ This plugin is currently a proof of concept. Better not se it in a production en
 
 See this issue on [WebAuthn in Two Factor](https://github.com/WordPress/two-factor/issues/232).
 
-Tested
-------
- - macOS Safari, Chrome, Firefox using [SoftU2F](https://github.com/github/SoftU2F)
- - macOS Chrome using OS authentication (fingerprint sensor, OS-password)
- - 
 
 Installation
 ------------
@@ -35,5 +30,8 @@ ToDo
  - [ ] User-Admin: allow adding token for others
  - [ ] User-Admin: Save key tested state
  - [ ] Save key creation and usage timestamp
- - [ ] UI: use wp-list-table
+ - [ ] UI: disable key generation if WebAuthn is not supported
+ - [ ] Login UI: show 
  - [ ] Test: Windows Hello, Hardware Key, Android
+ - [ ] WebAuthn
+   - [x] Function arg processing and return values
