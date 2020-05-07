@@ -126,7 +126,8 @@
       "sed -i '' 's/^#\\/vendor/\\/vendor/g' .gitignore",
       "git rm -r --cached vendor/",
       "git add .",
-      "git commit -m 'post release'"
+      "git commit -m 'post release'",
+      "git push"
     ]
   }
 }
