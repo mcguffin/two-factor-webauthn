@@ -5,7 +5,7 @@ Plugin Name: Two Factor WebAuthn
 Plugin URI: https://github.com/mcguffin/two-factor-webauthn
 Description: Enter description here.
 Author: joern
-Version: 0.0.10
+Version: 0.0.11
 Author URI: https://github.com/mcguffin
 GitHub Plugin URI: mcguffin/two-factor-webauthn
 License: GPL3
