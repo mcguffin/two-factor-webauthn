@@ -1,5 +1,5 @@
 import $ from 'jquery'
-import { register, login, sendRequest } from 'davidearl-webauthn'
+import { register, login, sendRequest, isWebauthnSupported } from 'davidearl-webauthn'
 
 
 
@@ -63,52 +63,63 @@ $(document).on( 'click', '#webauthn-register-key', e => {
 
 	register( opts, response => {
 
-		// 2DO: error handling
+		if ( response.success ) {
+			let $keyItem = $(response.html).appendTo('#webauthn-keys')
+			let $keyLabel = $keyItem.find('.webauthn-label')
 
-		let $keyItem = $(response.html).appendTo('#webauthn-keys')
-		let $keyLabel = $keyItem.find('.webauthn-label')
-
-		editKey(
-			$keyLabel.get(0),
-			JSON.parse( $keyLabel.attr('data-action') )
-		);
+			editKey(
+				$keyLabel.get(0),
+				JSON.parse( $keyLabel.attr('data-action') )
+			);
+		} else {
+			$(`<span class="description">${response.info}</span>`).insertAfter('#webauthn-register-key')
+		}
 	});
 
 });
 
-$(document).on('click','.webauthn-action', e => {
-	e.preventDefault();
-	const $btn = $(e.target).closest('.webauthn-action');
-	const opts = JSON.parse( $btn.attr('data-action') );
-	const $keyEl = $(e.target).closest('.webauthn-key')
-	const { action, payload, _wpnonce } = opts
-
-	if ( opts.action === 'webauthn-test-key' ) {
+if ( isWebauthnSupported ) {
+	$(document).on('click','.webauthn-action', e => {
 		e.preventDefault();
-		login( opts, result => {
-			// send that crap to server
-			console.log(result)
-			sendRequest( { action, payload: result.result, _wpnonce }, response => {
-				if ( response.success ) {
-					$btn.find('[data-tested]').attr('data-tested','tested')
-				} else {
-					$btn.find('[data-tested]').attr('data-tested','fail')
-				}
-			})
-		} );
-	} else if ( opts.action === 'webauthn-delete-key' ) {
-		e.preventDefault();
-		sendRequest( opts, function( response ) {
-			// remove
-			if ( response.success ) {
+		const $btn = $(e.target).closest('.webauthn-action');
+		const opts = JSON.parse( $btn.attr('data-action') );
+		const $keyEl = $(e.target).closest('.webauthn-key')
+		const { action, payload, _wpnonce } = opts
 
-				$keyEl.remove();
-			}
-		} );
-	} if ( opts.action === 'webauthn-edit-key' ) {
-		if ( 'true' !== $(e.currentTarget).prop( 'contenteditable' ) ) {
+		if ( opts.action === 'webauthn-test-key' ) {
 			e.preventDefault();
-			editKey( e.currentTarget, opts );
+			login( opts, result => {
+				// send that crap to server
+				console.log(result)
+				if ( ! result.success ) {
+					$keyEl.append(`<div class="notice notice-inline notice-warning">Error: ${result.result}</div>`)
+					return;
+				}
+				sendRequest( { action, payload: result.result, _wpnonce }, response => {
+					if ( response.success ) {
+						$btn.find('[data-tested]').attr('data-tested','tested')
+					} else {
+						$btn.find('[data-tested]').attr('data-tested','fail')
+					}
+				})
+			} );
+		} else if ( opts.action === 'webauthn-delete-key' ) {
+			e.preventDefault();
+			sendRequest( opts, function( response ) {
+				// remove
+				if ( response.success ) {
+
+					$keyEl.remove();
+				}
+			} );
+		} if ( opts.action === 'webauthn-edit-key' ) {
+			if ( 'true' !== $(e.currentTarget).prop( 'contenteditable' ) ) {
+				e.preventDefault();
+				editKey( e.currentTarget, opts );
+			}
 		}
-	}
-});
+	});
+} else {
+	$('.webauthn-unsupported').removeClass('hidden');
+	$('.webauthn-supported').addClass('hidden');
+}

@@ -67,7 +67,14 @@ class Two_Factor_Webauthn extends Two_Factor_Provider {
 		wp_register_style(
 			'webauthn-admin',
 			plugins_url( 'css/admin/two-factor-webauthn.css', dirname( __FILE__ ) ),
-			array( ),
+			[],
+			TWO_FACTOR_WEBAUTH_VERSION
+		);
+
+		wp_register_style(
+			'webauthn-login',
+			plugins_url( 'css/login/two-factor-webauthn.css', dirname( __FILE__ ) ),
+			[],
 			TWO_FACTOR_WEBAUTH_VERSION
 		);
 
@@ -90,6 +97,7 @@ class Two_Factor_Webauthn extends Two_Factor_Provider {
 	 */
 	public function login_enqueue_assets() {
 		wp_enqueue_script( 'webauthn-login' );
+		wp_enqueue_style( 'webauthn-login' );
 	}
 
 	/**
@@ -128,6 +136,9 @@ class Two_Factor_Webauthn extends Two_Factor_Provider {
 	 * @return null
 	 */
 	public function authentication_page( $user ) {
+
+		wp_enqueue_style( 'webauthn-login' );
+
 		require_once( ABSPATH . '/wp-admin/includes/template.php' );
 
 
@@ -143,7 +154,7 @@ class Two_Factor_Webauthn extends Two_Factor_Provider {
 		try {
 			$keys = $this->key_store->get_keys( $user->ID );
 			$auth_opts = $this->webauthn->prepareAuthenticate( $keys );
-			update_user_meta( $user->ID, self::LOGIN_USERMETA, $auth_opts );
+			update_user_meta( $user->ID, self::LOGIN_USERMETA, 1 );
 		} catch ( Exception $e ) {
 			?>
 			<p><?php esc_html_e( 'An error occurred while creating authentication data.', 'two-factor' ); ?></p>
@@ -167,6 +178,22 @@ class Two_Factor_Webauthn extends Two_Factor_Provider {
 		?>
 		<p><?php esc_html_e( 'Now insert (and tap) your Security Key.', 'two-factor' ); ?></p>
 		<input type="hidden" name="webauthn_response" id="webauthn_response" />
+
+		<div class="webauthn-retry">
+			<p>
+				<?php esc_html_e('Failed to connect to Authenticator.', 'two-factor-webauthn' ); ?>
+				<a href="#" class="webauthn-retry-link">
+					<?php esc_html_e('Try again', 'two-factor-webauthn'); ?>
+				</a>
+			</p>
+		</div>
+		<div class="webauthn-unsupported">
+			<p>
+				<span class="dashicons dashicons-warning"></span>
+				<?php esc_html_e( 'Your Browser does not support WebAuthn.', 'two-factor-webauthn' ); ?>
+				<?php esc_html_e( 'Please use a backup method.', 'two-factor-webauthn' ); ?>
+			</p>
+		</div>
 		<?php
 
 	}
@@ -243,7 +270,20 @@ class Two_Factor_Webauthn extends Two_Factor_Provider {
 		<p>
 			<?php esc_html_e( 'Requires an HTTPS connection.', 'two-factor' ); ?>
 		</p>
-		<button class="button-secondary" id="webauthn-register-key" data-create-options="<?php echo esc_attr( json_encode( $createData ) ) ?>"><?php esc_html_e('Register Key'); ?></button>
+
+		<div class="webauthn-supported">
+			<button class="button-secondary webauthn-supported" id="webauthn-register-key" data-create-options="<?php echo esc_attr( json_encode( $createData ) ) ?>">
+				<?php esc_html_e('Register Key'); ?>
+			</button>
+		</div>
+
+		<div class="webauthn-unsupported hidden">
+			<p class="description">
+				<span class="dashicons dashicons-warning"></span>
+				<?php esc_html_e( 'Your Browser does not support WebAuthn.', 'two-factor-webauthn' ); ?>
+			</p>
+		</div>
+
 		<ul class="keys" id="webauthn-keys">
 			<?php
 			foreach ( $keys as $key ) {
@@ -284,10 +324,13 @@ class Two_Factor_Webauthn extends Two_Factor_Provider {
 			wp_send_json_error( new WP_Error( 'webauthn', esc_html( json_last_error_msg() ) ) );
 		}
 
+		if ( ! is_object( $credential ) ) {
+			wp_send_json_error( new WP_Error( 'webauthn', __( 'Invalid credential', 'two-factor-webauthn' ) ) );
+		}
+
 		$keys = $this->key_store->get_keys( $user_id );
 
 		try {
-
 			$key = $this->webauthn->register( $credential, '' );
 
 			if ( false === $key ) {
@@ -456,7 +499,7 @@ class Two_Factor_Webauthn extends Two_Factor_Provider {
 
 		// actions
 		$out .= sprintf(
-			'<a href="#" class="webauthn-action webauthn-action-link -test" title="%1$s" data-action="%2$s" >
+			'<a href="#" class="webauthn-action webauthn-action-link -test webauthn-supported" title="%1$s" data-action="%2$s" >
 				%1$s
 				<span class="dashicons dashicons-yes-alt" data-tested="%3$s"></span>
 			</a>',

@@ -1,0 +1,21 @@
+@import 'variables/index';
+@import 'mixins/index';
+
+
+.webauthn-retry,
+.webauthn-unsupported {
+	display:none;
+	margin-top:13px;
+	&.visible {
+		display:block;
+	}
+	p {
+		font-style:italic;
+	}
+
+}
+.webauthn-retry {
+	.button {
+		float:right;
+	}
+}

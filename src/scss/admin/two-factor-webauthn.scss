@@ -3,6 +3,7 @@
 
 .webauthn-key {
 	display: flex;
+	flex-wrap: wrap;
 	align-items: center;
 	border-top:1px solid $wp-gray-dark;
 	&:last-of-type {
@@ -60,5 +61,8 @@
 		& + .webauthn-action {
 			margin-left:auto;
 		}
+	}
+	.notice {
+		flex-basis:100%;
 	}
 }

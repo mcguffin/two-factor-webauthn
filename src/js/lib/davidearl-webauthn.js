@@ -42,18 +42,44 @@ function webauthnAuthenticate( pubKeyAuth, cb ) {
 			};
 			cb( true, JSON.stringify( info ) );
 		})
-		.catch( aErr => {
-			if ( "name" in aErr ) {
+		.catch( err => {
+			console.log(err)
+			/*
+			FF mac:
+			InvalidStateError: key not found
+			AbortError: user aborted or denied
+			NotAllowedError: ?
+				The request is not allowed by the user agent or the platform in the current context, possibly because the user denied permission.
+
+			Chrome mac:
+			NotAllowedError: user aborted or denied
+
+			Safari mac:
+			NotAllowedError: user aborted or denied
+
+			Edge win10:
+			UnknownError: wrong key...?
+			NotAllowedError: user aborted or denied
+
+			FF win:
+			NotAllowedError: user aborted or denied
+				DOMException: "The request is not allowed by the user agent or the platform in the current context, possibly because the user denied permission."
+
+			*/
+			if ( "name" in err ) {
+				console.log(typeof err)
+				console.log(err.name)
+				console.log(err.message)
 				// change: distiguish between errors
-				if ( aErr.name == "NotAllowedError" ) {
+				if ( err.name == "NotAllowedError" ) {
 					cb( false, 'not-allowed' );
-				} else if ( aErr.name == "AbortError" || aErr.name == "NS_ERROR_ABORT" ) {
+				} else if ( err.name == "AbortError" || err.name == "NS_ERROR_ABORT" ) {
 					cb( false, 'abort' );
 				} else {
-					cb( false, aErr.toString() );
+					cb( false, err.toString() );
 				}
 			} else {
-				cb(false, aErr.toString());
+				cb( false, err.toString() );
 			}
 		});
 }
@@ -61,7 +87,7 @@ function webauthnAuthenticate( pubKeyAuth, cb ) {
 /**
  *	Stolen from https://github.com/davidearl/webauthn
  */
-function webauthnRegister(key, callback){
+function webauthnRegister( key, callback ){
 
 	let publicKey = Object.assign( {}, key.publicKey );
 
@@ -107,14 +133,18 @@ function webauthnRegister(key, callback){
 			};
 			callback(true, JSON.stringify(info));
 		})
-		.catch(function (aErr) {
-			if (
-				("name" in aErr) && (aErr.name == "AbortError" || aErr.name == "NS_ERROR_ABORT")
-				|| aErr.name == 'NotAllowedError'
-			) {
-				callback(false, 'abort');
+		.catch( err => {
+			console.log(err)
+
+			if ( "name" in err ) {
+				console.log(err.name)
+				if (err.name == "AbortError" || err.name == "NS_ERROR_ABORT") {
+					callback( false, 'abort' );
+				} else {
+					callback( false, err.name );
+				}
 			} else {
-				callback(false, aErr.toString());
+				callback( false, err.toString() );
 			}
 		});
 }
@@ -130,16 +160,20 @@ const register = ( opts, callback ) => {
 	const { action, payload, _wpnonce } = opts;
 
 	webauthnRegister( payload, (success,info) => {
-		$.ajax({
-			url: wp.ajax.settings.url,
-			method: 'post',
-			data: {
-				action: action,
-				payload: info,
-				_wpnonce: _wpnonce
-			},
-			success: callback
-		})
+		if ( response.success ) {
+			$.ajax({
+				url: wp.ajax.settings.url,
+				method: 'post',
+				data: {
+					action: action,
+					payload: info,
+					_wpnonce: _wpnonce
+				},
+				success: callback
+			})
+		} else {
+			callback( { success:false, error:info } )
+		}
 	})
 }
 
@@ -169,11 +203,11 @@ const sendRequest = ( opts, callback ) => {
 	})
 }
 
-
-const editKey = ( opts, callback ) => {
-
-}
+const isWebauthnSupported = 'credentials' in navigator
 
 module.exports = {
-	register, login, sendRequest
+	register,
+	login,
+	sendRequest,
+	isWebauthnSupported
 }
