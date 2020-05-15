@@ -106,6 +106,7 @@ if ( isWebauthnSupported ) {
 
 				if ( ! result.success ) {
 					$keyEl.append(`<div class="notice notice-inline notice-warning">${result.message}</div>`)
+					$btn.removeClass('busy');
 					return;
 				}
 				sendRequest( { action, payload: result.result, _wpnonce }, response => {
