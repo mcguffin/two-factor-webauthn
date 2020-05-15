@@ -1,12 +1,1 @@
-{
-  "src/js/admin/two-factor-webauthn/index.js": [
-    "js/admin/two-factor-webauthn.js"
-  ],
-  "src/js/login/two-factor-webauthn/index.js": [
-    "js/login/two-factor-webauthn.js"
-  ],
-  "src/js/lib/davidearl-webauthn.js": [
-    "js/login/two-factor-webauthn.js",
-    "js/admin/two-factor-webauthn.js"
-  ]
-}
+{}

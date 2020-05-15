@@ -2,14 +2,14 @@
 # This file is distributed under the same license as the Two Factor Web Authentification plugin.
 msgid ""
 msgstr ""
-"Project-Id-Version: Two Factor Web Authentification 0.0.14\n"
+"Project-Id-Version: Two Factor Web Authentification 0.0.15\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/two-factor-webauthn\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2020-05-15T04:31:34+00:00\n"
+"POT-Creation-Date: 2020-05-15T05:10:25+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.4.0\n"
 "X-Domain: two-factor-webauthn\n"
@@ -34,83 +34,83 @@ msgstr ""
 msgid "https://github.com/mcguffin"
 msgstr ""
 
-#: providers/class.two-factor-webauthn.php:148
+#: providers/class.two-factor-webauthn.php:151
 msgid "Web Authentication requires an HTTPS connection. Please use an alternative 2nd factor method."
 msgstr ""
 
-#: providers/class.two-factor-webauthn.php:160
+#: providers/class.two-factor-webauthn.php:163
 msgid "An error occurred while creating authentication data."
 msgstr ""
 
-#: providers/class.two-factor-webauthn.php:179
+#: providers/class.two-factor-webauthn.php:182
 msgid "Please authenticate yourself."
 msgstr ""
 
-#: providers/class.two-factor-webauthn.php:184
+#: providers/class.two-factor-webauthn.php:187
 msgid "Failed to connect to Authenticator."
 msgstr ""
 
-#: providers/class.two-factor-webauthn.php:186
+#: providers/class.two-factor-webauthn.php:189
 msgid "Try again"
 msgstr ""
 
-#: providers/class.two-factor-webauthn.php:193
-#: providers/class.two-factor-webauthn.php:283
+#: providers/class.two-factor-webauthn.php:196
+#: providers/class.two-factor-webauthn.php:286
 msgid "Your Browser does not support WebAuthn."
 msgstr ""
 
-#: providers/class.two-factor-webauthn.php:194
+#: providers/class.two-factor-webauthn.php:197
 msgid "Please use a backup method."
 msgstr ""
 
-#: providers/class.two-factor-webauthn.php:271
+#: providers/class.two-factor-webauthn.php:274
 msgid "You can configure hardware authenticators like an USB token or your current device with the button below."
 msgstr ""
 
-#: providers/class.two-factor-webauthn.php:276
+#: providers/class.two-factor-webauthn.php:279
 msgid "Register Device"
 msgstr ""
 
-#: providers/class.two-factor-webauthn.php:315
-#: providers/class.two-factor-webauthn.php:373
-#: providers/class.two-factor-webauthn.php:381
-#: providers/class.two-factor-webauthn.php:415
-#: providers/class.two-factor-webauthn.php:443
+#: providers/class.two-factor-webauthn.php:318
+#: providers/class.two-factor-webauthn.php:376
+#: providers/class.two-factor-webauthn.php:384
+#: providers/class.two-factor-webauthn.php:418
+#: providers/class.two-factor-webauthn.php:446
 msgid "Invalid request"
 msgstr ""
 
-#: providers/class.two-factor-webauthn.php:328
+#: providers/class.two-factor-webauthn.php:331
 msgid "Invalid credential"
 msgstr ""
 
-#: providers/class.two-factor-webauthn.php:340
+#: providers/class.two-factor-webauthn.php:343
 msgid "New Device"
 msgstr ""
 
-#: providers/class.two-factor-webauthn.php:347
+#: providers/class.two-factor-webauthn.php:350
 msgid "Device already Exists"
 msgstr ""
 
-#: providers/class.two-factor-webauthn.php:386
+#: providers/class.two-factor-webauthn.php:389
 msgid "Invalid label"
 msgstr ""
 
-#: providers/class.two-factor-webauthn.php:391
+#: providers/class.two-factor-webauthn.php:394
 msgid "No such key"
 msgstr ""
 
-#: providers/class.two-factor-webauthn.php:402
+#: providers/class.two-factor-webauthn.php:405
 msgid "Could not edit key"
 msgstr ""
 
-#: providers/class.two-factor-webauthn.php:428
+#: providers/class.two-factor-webauthn.php:431
 msgid "Could not delete key"
 msgstr ""
 
-#: providers/class.two-factor-webauthn.php:506
+#: providers/class.two-factor-webauthn.php:509
 msgid "Test"
 msgstr ""
 
-#: providers/class.two-factor-webauthn.php:519
+#: providers/class.two-factor-webauthn.php:522
 msgid "Delete"
 msgstr ""
