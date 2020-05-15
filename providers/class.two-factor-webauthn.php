@@ -101,8 +101,8 @@ class Two_Factor_Webauthn extends Two_Factor_Provider {
 	}
 
 	/**
-	 * Return the U2F AppId. WebAuthn requires the AppID to use HTTPS
-	 * and a top-level domain.
+	 * Return the U2F AppId. WebAuthn requires the AppID
+	 * to be the current domain or a suffix of it.
 	 *
 	 * @return string AppID FQDN
 	 */
