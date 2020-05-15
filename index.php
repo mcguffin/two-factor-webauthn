@@ -1,7 +1,7 @@
 <?php
 
 /*
-Plugin Name: Two Factor Web Authentification
+Plugin Name: Two Factor Web Authentication
 Plugin URI: https://github.com/mcguffin/two-factor-webauthn
 Description: Web Authentication for the Two Factor WordPress Plugin
 Author: Jörn Lund
