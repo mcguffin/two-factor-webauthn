@@ -9,7 +9,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2020-05-07T15:43:10+00:00\n"
+"POT-Creation-Date: 2020-05-15T04:31:34+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.4.0\n"
 "X-Domain: two-factor-webauthn\n"
@@ -65,6 +65,10 @@ msgstr ""
 
 #: providers/class.two-factor-webauthn.php:271
 msgid "You can configure hardware authenticators like an USB token or your current device with the button below."
+msgstr ""
+
+#: providers/class.two-factor-webauthn.php:276
+msgid "Register Device"
 msgstr ""
 
 #: providers/class.two-factor-webauthn.php:315

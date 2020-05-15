@@ -273,7 +273,7 @@ class Two_Factor_Webauthn extends Two_Factor_Provider {
 
 		<div class="webauthn-supported webauth-register">
 			<button class="button-secondary" id="webauthn-register-key" data-create-options="<?php echo esc_attr( json_encode( $createData ) ) ?>">
-				<?php esc_html_e('Register Device'); ?>
+				<?php esc_html_e( 'Register Device', 'two-factor-webauthn' ); ?>
 			</button>
 		</div>
 
