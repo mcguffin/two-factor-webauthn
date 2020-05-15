@@ -143,7 +143,7 @@ const buffer2Array = arrayBuf => [ ... (new Uint8Array( arrayBuf )) ];
 
 const register = ( opts, callback ) => {
 
-	const { action, payload, _wpnonce } = opts;
+	const { action, user_id, payload, _wpnonce } = opts;
 
 	webauthnRegister( payload, (success,info) => {
 		if ( success ) {
@@ -151,9 +151,10 @@ const register = ( opts, callback ) => {
 				url: wp.ajax.settings.url,
 				method: 'post',
 				data: {
-					action: action,
+					action,
 					payload: info,
-					_wpnonce: _wpnonce
+					user_id,
+					_wpnonce
 				},
 				success: callback
 			})
@@ -180,16 +181,10 @@ const login = ( opts, callback ) => {
 
 const sendRequest = ( opts, callback ) => {
 
-	const { action, payload, _wpnonce } = opts;
-
 	$.ajax({
 		url: wp.ajax.settings.url,
 		method: 'post',
-		data: {
-			action: action,
-			payload: payload,
-			_wpnonce: _wpnonce
-		},
+		data: opts,
 		success:callback
 	})
 }

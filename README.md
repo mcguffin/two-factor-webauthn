@@ -28,10 +28,10 @@ Installation
 ToDo
 ----
  - [ ] User-Admin: allow adding token for others
- - [ ] User-Admin: Save key tested state
- - [ ] Save key creation and usage timestamp
- - [ ] UI: disable key generation if WebAuthn is not supported
- - [ ] Login UI: show 
- - [ ] Test: Windows Hello, Hardware Key, Android
- - [ ] WebAuthn
+ - [x] User-Admin: Save key tested state
+ - [x] Save key creation and usage timestamp
+ - [x] UI: disable key generation if WebAuthn is not supported
+ - [x] Login UI: show 
+ - [x] Test: Windows Hello, Hardware Key, Android
+ - [x] WebAuthn
    - [x] Function arg processing and return values

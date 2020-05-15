@@ -66,6 +66,7 @@ $(document).on( 'click', '#webauthn-register-key', e => {
 	e.preventDefault();
 
 	$(e.target).next('.webauthn-error').remove()
+
 	let $btn = $(e.target).addClass('busy')
 
 	const opts = JSON.parse( $(e.target).attr('data-create-options') );
@@ -81,7 +82,15 @@ $(document).on( 'click', '#webauthn-register-key', e => {
 				JSON.parse( $keyLabel.attr('data-action') )
 			);
 		} else {
-			$(`<span class="webauthn-error description">${response.message}</span>`).insertAfter('#webauthn-register-key')
+			let msg;
+			if ( !! response.message ) {
+				msg = response.message;
+			} else if ( !! response.data && response.data[0] && response.data[0].message ) {
+				msg = response.data[0].message;
+			} else {
+				msg = JSON.stringify(response)
+			}
+			$(`<span class="webauthn-error description">${msg}</span>`).insertAfter('#webauthn-register-key')
 		}
 	});
 
@@ -93,23 +102,21 @@ if ( isWebauthnSupported ) {
 		const $btn = $(e.target).closest('.webauthn-action');
 		const opts = JSON.parse( $btn.attr('data-action') );
 		const $keyEl = $(e.target).closest('.webauthn-key')
-		const { action, payload, _wpnonce } = opts
+		const { action, user_id, payload, _wpnonce } = opts
 
-
-
-		if ( opts.action === 'webauthn-test-key' ) {
+		if ( action === 'webauthn-test-key' ) {
 			e.preventDefault();
 			$keyEl.find('.notice').remove();
 			$btn.addClass('busy');
 			login( opts, result => {
 				// send that crap to server
-
 				if ( ! result.success ) {
 					$keyEl.append(`<div class="notice notice-inline notice-warning">${result.message}</div>`)
 					$btn.removeClass('busy');
 					return;
 				}
-				sendRequest( { action, payload: result.result, _wpnonce }, response => {
+				console.log({ action, user_id, payload: result.result, _wpnonce })
+				sendRequest( { action, user_id, payload: result.result, _wpnonce }, response => {
 					if ( response.success ) {
 						$btn.find('[data-tested]').attr('data-tested','tested')
 					} else {
@@ -119,14 +126,17 @@ if ( isWebauthnSupported ) {
 					$btn.removeClass('busy');
 				})
 			} );
-		} else if ( opts.action === 'webauthn-delete-key' ) {
+		} else if ( action === 'webauthn-delete-key' ) {
 			$keyEl.addClass('busy');
 			e.preventDefault();
 			sendRequest( opts, function( response ) {
+				$keyEl.removeClass('busy');
 				// remove
 				if ( response.success ) {
-
 					$keyEl.remove();
+				} else {
+					// error from server
+					$keyEl.append(`<div class="notice notice-inline notice-error">${response.data[0].message}</div>`)
 				}
 			} );
 		} if ( opts.action === 'webauthn-edit-key' ) {
