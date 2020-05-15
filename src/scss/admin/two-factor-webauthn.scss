@@ -8,20 +8,86 @@
 		margin-left: 13px;
 	}
 }
-
+#webauthn-keys,
+.webauth-register {
+	.busy {
+		color:mix($wp-gray-dark,$wp-gray-darker);
+		pointer-events:none;
+		transition: opacity 0.3s ease;
+		background-size: 30px 30px;
+		background-image: linear-gradient(45deg, rgba(0, 0, 0, 0.1) 25%, transparent 25%, transparent 50%, rgba(0, 0, 0, 0.1) 50%, rgba(0, 0, 0, 0.1) 75%, transparent 75%, transparent);
+		animation: barberpole 0.5s linear infinite;
+	}
+}
+// #webauthn-keys {
+// 	min-width:100%;
+// 	display: table;
+// 	& > * {
+// 		display: table-row;
+// 		& > * {
+// 			display: table-cell;
+// 		}
+// 	}
+// }
+@keyframes barberpole {
+  from {
+    background-position: 0 0;
+  }
+  to {
+    background-position: 60px 30px;
+  }
+}
 .webauthn-key {
 	display: flex;
 	flex-wrap: wrap;
-	align-items: center;
+	align-items: last baseline;
 	border-top:1px solid $wp-gray-dark;
+	@media screen and (max-width: 600px) {
+		flex-direction: column;
+		text-align: center;
+		& > * {
+			min-width:100%;
+			margin-bottom:6px;
+		}
+	}
+	&, * {
+		box-sizing: border-box;
+	}
 	&:last-of-type {
 		border-bottom:1px solid $wp-gray-dark;
 	}
 	.webauthn-label {
 		flex:1;
+		white-space: normal;
+		padding:3px;
+		@media screen and (max-width: 600px) {
+			font-size:1.5em;
+			padding:6px;
+		}
+		& ~ * {
+			flex:0;
+		}
+	}
+	.webauthn-created,
+	.webauthn-used {
+		display: inline-block;
+		white-space: nowrap;
+		padding:0 0.5em;
+		@media screen and (min-width: 600px) {
+			min-width:100px;
+		}
+		small {
+			// font-size:0.85em;
+			// display: block;
+		}
+	}
+	.webauthn-created {
+		@media screen and (max-width: 782px) {
+
+		}
 	}
 	[data-tested="tested"] {
-		color: $wp-green;
+		color: $wp-blue;
 	}
 	[data-tested="fail"] {
 		color: $wp-red;
@@ -42,18 +108,29 @@
 		padding:3px;
 		border:1px solid rgba(0,0,0,0);
 		text-decoration:none;
-		white-space: nowrap;
 	}
 	.webauthn-action-link {
 		flex:0;
-		&.-test {
 
+		&.-test,
+		&.-delete {
+			white-space: nowrap;
+			@media screen and (max-width: 600px) {
+				text-align: center;
+				&,
+				::before {
+					font-size:1.5em;
+				}
+			}
 		}
 		&.-delete {
-			color:$wp-red;
+			&:hover {
+				color:$wp-red;
+			}
 		}
 	}
-	.webauthn-label {
+	> .webauthn-label {
+		word-break: break-word;
 		&:focus {
 			outline:none;
 		}
@@ -61,13 +138,8 @@
 			 background-color: #fff;
 			 border-color:$wp-blue;
 		}
-		& + .spinner {
-			margin-right:auto;
-			float:none;
-			visibility: visible;
-		}
-		& + .webauthn-action {
-			margin-left:auto;
+		&.busy {
+			border-color:$wp-gray-dark;
 		}
 	}
 	.notice {

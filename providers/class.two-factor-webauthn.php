@@ -295,6 +295,8 @@ class Two_Factor_Webauthn extends Two_Factor_Provider {
 					'ul'		=> [ 'id' => [], 'class' => [], ],
 					'li'		=> [ 'id' => [], 'class' => [], ],
 					'strong'	=> [ 'id' => [], 'class' => [], ],
+					'small'		=> [ 'id' => [], 'class' => [], ],
+					'br'		=> [ 'id' => [], 'class' => [], ],
 					'em'		=> [ 'id' => [], 'class' => [], ],
 					'span'		=> [ 'id' => [], 'class' => [], 'data-action' => [], 'data-tested' => [], 'tabindex' => [] ],
 					'a'			=> [ 'id' => [], 'class' => [], 'data-action' => [], 'tabindex' => [], 'href' => [] ],
@@ -339,8 +341,8 @@ class Two_Factor_Webauthn extends Two_Factor_Provider {
 			if ( false === $key ) {
 				wp_send_json_error( new WP_Error( 'webauthn', $this->webauthn->getLastError() ) );
 			}
-
-			$key->label = __( 'New Device','two-factor-webauthn' );
+			/* translators: %s webauthn app id (domain) */
+			$key->label = sprintf( esc_html__( 'New Device - %s','two-factor-webauthn' ), $this->get_app_id() );
 			$key->md5id = md5( implode( '', array_map( 'chr', $key->id ) ) );
 			$key->created = time();
 			$key->last_used = false;
@@ -488,16 +490,17 @@ class Two_Factor_Webauthn extends Two_Factor_Provider {
 
 			esc_html( $pubKey->label )
 		);
-		// $out .= sprintf(
-		// 	'<li><strong>%s</strong> %s</li>',
-		// 	__( 'Created', 'two-factor-webauthn' ),
-		// 	date_i18n( get_option( 'date_format', 'r' ), $pubKey->created )
-		// );
-		// $out .= sprintf(
-		// 	'<li><strong>%s</strong> %s</li>',
-		// 	__( 'Last used', 'two-factor-webauthn' ),
-		// 	date_i18n( get_option( 'date_format', 'r' ), $pubKey->last_used )
-		// );
+		$date_format = _x( 'm/d/Y', 'Short date format', 'two-factor-webauthn' );
+		$out .= sprintf(
+			'<span class="webauthn-created"><small>%s</small><br />%s</span>',
+			__( 'Created:', 'two-factor-webauthn' ),
+			date_i18n( $date_format, $pubKey->created )
+		);
+		$out .= sprintf(
+			'<span class="webauthn-used"><small>%s</small><br />%s</span>',
+			__( 'Last used:', 'two-factor-webauthn' ),
+			$pubKey->last_used ? date_i18n( $date_format, $pubKey->last_used ) : esc_html__('- Never -','two-factor-webauthn')
+		);
 
 
 		// actions

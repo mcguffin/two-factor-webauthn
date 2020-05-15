@@ -11,12 +11,12 @@ const editKey = ( editLabel, opts ) => {
 	// console.log($editLabel.prop( 'contenteditable' ));
 	const stopEditing = ( save = false ) => {
 		let newLabel = $(editLabel).text()
+		$(editLabel).text(newLabel)
 		$(editLabel).prop( 'contenteditable', false );
 		$(document).off( 'keydown' )
 		$(editLabel).off( 'blur' )
 		if ( save && prevLabel !== newLabel ) {
-
-			$('<span class="spinner"></span>').insertAfter(editLabel)
+			$(editLabel).addClass('busy')
 
 			sendRequest(
 				{
@@ -25,7 +25,7 @@ const editKey = ( editLabel, opts ) => {
 					_wpnonce
 				},
 				response => {
-					$(editLabel).next('.spinner').remove()
+					$(editLabel).removeClass('busy')
 				}
 			);
 		} else if ( ! save ) {
@@ -47,7 +47,13 @@ const editKey = ( editLabel, opts ) => {
 	} )
 
 	// focus and select
-	$(editLabel).on( 'blur', e => stopEditing( true ) )
+	$(editLabel)
+		.on( 'blur', e => stopEditing( true ) )
+		.on( 'paste', e => {
+		    e.preventDefault();
+		    let text = (e.originalEvent || e).clipboardData.getData('text/plain');
+		    document.execCommand("insertHTML", false, text);
+		} )
 
 	$(editLabel).focus()
 
@@ -60,11 +66,12 @@ $(document).on( 'click', '#webauthn-register-key', e => {
 	e.preventDefault();
 
 	$(e.target).next('.webauthn-error').remove()
+	let $btn = $(e.target).addClass('busy')
 
 	const opts = JSON.parse( $(e.target).attr('data-create-options') );
 
 	register( opts, response => {
-
+		$btn.removeClass('busy')
 		if ( response.success ) {
 			let $keyItem = $(response.html).appendTo('#webauthn-keys')
 			let $keyLabel = $keyItem.find('.webauthn-label')
@@ -93,6 +100,7 @@ if ( isWebauthnSupported ) {
 		if ( opts.action === 'webauthn-test-key' ) {
 			e.preventDefault();
 			$keyEl.find('.notice').remove();
+			$btn.addClass('busy');
 			login( opts, result => {
 				// send that crap to server
 
@@ -107,9 +115,11 @@ if ( isWebauthnSupported ) {
 						$btn.find('[data-tested]').attr('data-tested','fail')
 						$keyEl.append(`<div class="notice notice-inline notice-error">${response.message}</div>`)
 					}
+					$btn.removeClass('busy');
 				})
 			} );
 		} else if ( opts.action === 'webauthn-delete-key' ) {
+			$keyEl.addClass('busy');
 			e.preventDefault();
 			sendRequest( opts, function( response ) {
 				// remove
