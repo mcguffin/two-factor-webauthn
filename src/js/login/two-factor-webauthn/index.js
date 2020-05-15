@@ -25,8 +25,8 @@ if ( ! window.webauthnL10n ) {
 
 if ( isWebauthnSupported ) {
 	$(document)
-		.ready( () => auth() )
-		.on('click','.webauthn-retry-link', () => auth() );
+		.ready( auth )
+		.on('click','.webauthn-retry-link', auth );
 } else {
 	// show message
 	$('.webauthn-unsupported').addClass('visible')

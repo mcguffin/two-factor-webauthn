@@ -96,9 +96,9 @@ function webauthnRegister( key, callback ){
 			if ( key.b64challenge !== cd.challenge ) {
 				callback(false, 'key returned something unexpected (1)');
 			}
-			if ('https://'+key.publicKey.rp.name != cd.origin) {
-				return callback(false, 'key returned something unexpected (2)');
-			}
+			// if ('https://'+key.publicKey.rp.name != cd.origin) {
+			// 	return callback(false, 'key returned something unexpected (2)');
+			// }
 			if (! ('type' in cd)) {
 				return callback(false, 'key returned something unexpected (3)');
 			}

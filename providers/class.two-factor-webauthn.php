@@ -101,22 +101,25 @@ class Two_Factor_Webauthn extends Two_Factor_Provider {
 	}
 
 	/**
-	 * Return the U2F AppId. U2F requires the AppID to use HTTPS
+	 * Return the U2F AppId. WebAuthn requires the AppID to use HTTPS
 	 * and a top-level domain.
 	 *
-	 * @return string AppID URI
+	 * @return string AppID FQDN
 	 */
 	public function get_app_id() {
 
-		$url_parts = wp_parse_url( home_url() );
+		$fqdn = parse_url( network_site_url(), PHP_URL_HOST );
 
-		return $url_parts['host'];
+		/**
+		 * Filter the WebAuthn App ID.
+		 *
+		 * In order for this to work, the App-ID has to be either the current
+		 * (sub-)domain or a suffix of it.
+		 *
+		 * @param string $fqdn Domain name acting as relying party ID
+		 */
+		return apply_filters( 'two-factor-webauthn-app-id', $fqdn );
 
-		if ( ! empty( $url_parts['port'] ) ) {
-			return sprintf( 'https://%s:%d/', $url_parts['host'], $url_parts['port'] );
-		} else {
-			return sprintf( 'https://%s/', $url_parts['host'] );
-		}
 	}
 
 

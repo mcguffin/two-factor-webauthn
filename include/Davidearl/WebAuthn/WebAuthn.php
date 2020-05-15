@@ -488,7 +488,7 @@ class WebAuthn
 		}
 
 		if ( $info->response->clientData->type != 'webauthn.get') {
-			$this->last_error[ $this->last_call ] = "info-wrong-type-$info->response->clientData->type";
+			$this->last_error[ $this->last_call ] = "info-wrong-type";
 			return false;
         }
 
@@ -505,7 +505,8 @@ class WebAuthn
 		/* cross check origin */
         $origin = parse_url( $info->response->clientData->origin );
 
-        if ( $this->appid !== $origin['host'] ) {
+        if ( strpos( $origin['host'], $this->appid ) !== ( strlen( $origin['host'] ) - strlen( $this->appid ) ) ) {
+
 			$this->last_error[ $this->last_call ] = 'info-origin-mismatch';
 			return false;
         }
