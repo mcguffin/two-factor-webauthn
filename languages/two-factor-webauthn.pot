@@ -2,14 +2,14 @@
 # This file is distributed under the same license as the Two Factor Web Authentification plugin.
 msgid ""
 msgstr ""
-"Project-Id-Version: Two Factor Web Authentification 0.0.17\n"
+"Project-Id-Version: Two Factor Web Authentification 0.1.0\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/two-factor-webauthn\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2020-05-15T07:24:55+00:00\n"
+"POT-Creation-Date: 2020-05-15T09:59:37+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.4.0\n"
 "X-Domain: two-factor-webauthn\n"
@@ -72,63 +72,79 @@ msgid "Register Device"
 msgstr ""
 
 #: providers/class.two-factor-webauthn.php:320
-#: providers/class.two-factor-webauthn.php:378
-#: providers/class.two-factor-webauthn.php:386
-#: providers/class.two-factor-webauthn.php:420
-#: providers/class.two-factor-webauthn.php:448
+#: providers/class.two-factor-webauthn.php:388
+#: providers/class.two-factor-webauthn.php:407
+#: providers/class.two-factor-webauthn.php:441
+#: providers/class.two-factor-webauthn.php:479
 msgid "Invalid request"
 msgstr ""
 
-#: providers/class.two-factor-webauthn.php:333
+#: providers/class.two-factor-webauthn.php:332
 msgid "Invalid credential"
 msgstr ""
 
+#: providers/class.two-factor-webauthn.php:339
+#: providers/class.two-factor-webauthn.php:397
+#: providers/class.two-factor-webauthn.php:489
+msgid "Invalid request data"
+msgstr ""
+
+#: providers/class.two-factor-webauthn.php:343
+msgid "Not allowed to add key"
+msgstr ""
+
 #. translators: %s webauthn app id (domain)
-#: providers/class.two-factor-webauthn.php:345
+#: providers/class.two-factor-webauthn.php:355
 msgid "New Device - %s"
 msgstr ""
 
-#: providers/class.two-factor-webauthn.php:352
+#: providers/class.two-factor-webauthn.php:362
 msgid "Device already Exists"
 msgstr ""
 
-#: providers/class.two-factor-webauthn.php:391
+#: providers/class.two-factor-webauthn.php:401
+#: providers/class.two-factor-webauthn.php:455
+#: providers/class.two-factor-webauthn.php:493
+msgid "Operation not permitted"
+msgstr ""
+
+#: providers/class.two-factor-webauthn.php:412
 msgid "Invalid label"
 msgstr ""
 
-#: providers/class.two-factor-webauthn.php:396
+#: providers/class.two-factor-webauthn.php:417
 msgid "No such key"
 msgstr ""
 
-#: providers/class.two-factor-webauthn.php:407
+#: providers/class.two-factor-webauthn.php:428
 msgid "Could not edit key"
 msgstr ""
 
-#: providers/class.two-factor-webauthn.php:433
+#: providers/class.two-factor-webauthn.php:464
 msgid "Could not delete key"
 msgstr ""
 
-#: providers/class.two-factor-webauthn.php:493
+#: providers/class.two-factor-webauthn.php:536
 msgctxt "Short date format"
 msgid "m/d/Y"
 msgstr ""
 
-#: providers/class.two-factor-webauthn.php:496
+#: providers/class.two-factor-webauthn.php:539
 msgid "Created:"
 msgstr ""
 
-#: providers/class.two-factor-webauthn.php:501
+#: providers/class.two-factor-webauthn.php:544
 msgid "Last used:"
 msgstr ""
 
-#: providers/class.two-factor-webauthn.php:502
+#: providers/class.two-factor-webauthn.php:545
 msgid "- Never -"
 msgstr ""
 
-#: providers/class.two-factor-webauthn.php:512
+#: providers/class.two-factor-webauthn.php:554
 msgid "Test"
 msgstr ""
 
-#: providers/class.two-factor-webauthn.php:525
+#: providers/class.two-factor-webauthn.php:568
 msgid "Delete"
 msgstr ""
