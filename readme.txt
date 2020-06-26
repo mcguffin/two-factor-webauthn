@@ -2,9 +2,9 @@
 Contributors: #### Your wordpress.org Username ####
 Donate link: #### donate link ####
 Tags: #### donate link ####
-Requires at least: 3.8
-Requires PHP: 5.3
-Tested up to: 4.9
+Requires at least: 4.8
+Requires PHP: 5.6
+Tested up to: 5.4
 Stable tag: 0.1.0
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
@@ -13,8 +13,9 @@ License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
 == Description ==
 
-#### Long Description ####
+WebAuthn module for the [Two Factor](https://github.com/WordPress/two-factor/) WordPress plugin.
 
+= Development =
 
 
 == Installation ==
@@ -25,11 +26,11 @@ Follow the standard [WordPress plugin installation procedere](http://codex.wordp
 
 = I found a bug. Where should I post it? =
 
-You can can either go into the Support forum, or in the [ Repository](https://github.com//).
+You can can either go into the Support forum, or in the [ Repository](https://github.com/mcguffin/two-factor-webauthn).
 
 = I'd like to suggest a feature. Where should I post it? =
 
-I personally prefer GitHub. The plugin code is here: [GitHub](https://github.com//)
+I personally prefer GitHub. The plugin code is here: [GitHub](https://github.com/mcguffin/two-factor-webauthn)
 (See above as well.)
 
 = I want to use the latest files. How can I do this? =
@@ -47,16 +48,6 @@ Use the GitHub Repo rather than the WordPress Plugin. Do as follows:
 = I found a bug and fixed it. How can I let You know? =
 
 Either post it on the [GitHub-repo](https://github.com//) or—if you cloned the repository—send me a pull request.
-
-= Will you accept translations? =
-
-Yep sure! (And a warm thankyou in advance.) It might take some time until your localization
-will appear in an official plugin release, and it is not unlikely that I will have added
-or removed some strings in the meantime.
-
-As soon as there is a [public centralized repository for WordPress plugin translations](https://translate.wordpress.org/projects/wp-plugins)
-I will migrate all the translation stuff there.
-
 
 == Screenshots ==
 
