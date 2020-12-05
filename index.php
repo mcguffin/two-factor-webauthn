@@ -5,7 +5,7 @@ Plugin Name: Two Factor Web Authentication
 Plugin URI: https://github.com/mcguffin/two-factor-webauthn
 Description: Web Authentication for the Two Factor WordPress Plugin
 Author: Jörn Lund
-Version: 0.1.0
+Version: 0.1.1
 Author URI: https://github.com/mcguffin
 GitHub Plugin URI: mcguffin/two-factor-webauthn
 License: GPL3

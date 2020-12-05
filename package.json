@@ -1,6 +1,6 @@
 {
   "name": "two-factor-webauthn",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "",
   "private": true,
   "author": "joern",
@@ -15,7 +15,7 @@
     "postinstall": "composer install && npm run init",
     "dashicons": "node ./src/run/dashicons.js",
     "init": "mkdir -p src/php",
-    "merge-vendor":"cp -r vendor/phpseclib/phpseclib/phpseclib include && cp -r vendor/2tvenom/cborencode/src/* include",
+    "merge-vendor": "cp -r vendor/phpseclib/phpseclib/phpseclib include && cp -r vendor/2tvenom/cborencode/src/* include",
     "dev": "gulp dev",
     "i18n": "node src/run/json-i18n.js two-factor-webauthn",
     "rollback": "git reset --hard HEAD~ && git push origin +master",
