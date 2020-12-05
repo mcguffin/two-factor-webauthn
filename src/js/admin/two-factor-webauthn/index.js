@@ -115,7 +115,6 @@ if ( isWebauthnSupported ) {
 					$btn.removeClass('busy');
 					return;
 				}
-				console.log({ action, user_id, payload: result.result, _wpnonce })
 				sendRequest( { action, user_id, payload: result.result, _wpnonce }, response => {
 					if ( response.success ) {
 						$btn.find('[data-tested]').attr('data-tested','tested')
