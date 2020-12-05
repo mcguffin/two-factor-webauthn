@@ -34,13 +34,14 @@
     "@babel/plugin-proposal-object-rest-spread": "^7.5.4",
     "@babel/plugin-transform-react-jsx": "^7.3.0",
     "@babel/preset-env": "^7.5.4",
+    "@selfisekai/gulp-sass": "^4.2.0",
     "babelify": "^10.0.0",
     "browserify": "^16.3.0",
     "browserify-shim": "^3.8.14",
     "event-stream": "^4.0.1",
     "gulp-autoprefixer": "^6.1.0",
-    "gulp-sass": "^4.0.2",
     "gulp-sourcemaps": "^2.6.5",
+    "node-sass": "^5.0.0",
     "tinyify": "^2.5.1",
     "uglifyify": "^5.0.2",
     "vinyl-buffer": "^1.0.1",
@@ -48,8 +49,7 @@
   },
   "dependencies": {
     "@wordpress/compose": "^3.7.2",
-    "gulp": "^4.0.2",
-    "jquery": "^1.12.4"
+    "gulp": "^4.0.2"
   },
   "wpSkeleton": {
     "components": {
