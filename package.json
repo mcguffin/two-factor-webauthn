@@ -15,6 +15,7 @@
     "postinstall": "composer install && npm run init",
     "dashicons": "node ./src/run/dashicons.js",
     "init": "mkdir -p src/php",
+    "merge-vendor":"cp -r vendor/phpseclib/phpseclib/phpseclib include && cp -r vendor/2tvenom/cborencode/src/* include",
     "dev": "gulp dev",
     "i18n": "node src/run/json-i18n.js two-factor-webauthn",
     "rollback": "git reset --hard HEAD~ && git push origin +master",
@@ -97,21 +98,18 @@
   "wporg": {
     "steps": [
       "build",
-      "git",
-      "post"
+      "git"
     ],
     "type": "plugin",
     "build": {
       "versionedFiles": null,
       "prebuild": [
+        "npm run merge-vendor",
         "wp i18n make-pot . languages/two-factor-webauthn.pot --domain=two-factor-webauthn --exclude=tmp --exclude=vendor"
       ],
       "build": [
         "npm run setversion",
-        "gulp build",
-        "composer install --no-dev --no-progress --prefer-dist",
-        "sed -i '' 's/^\\/vendor/#\\/vendor/g' .gitignore",
-        "git add ."
+        "gulp build"
       ]
     },
     "git": {
@@ -121,13 +119,6 @@
     "wporg": {
       "assets": ".wporg",
       "svn_user": "podpirate"
-    },
-    "post": [
-      "sed -i '' 's/^#\\/vendor/\\/vendor/g' .gitignore",
-      "git rm -r --cached vendor/",
-      "git add .",
-      "git commit -m 'post release'",
-      "git push"
-    ]
+    }
   }
 }
