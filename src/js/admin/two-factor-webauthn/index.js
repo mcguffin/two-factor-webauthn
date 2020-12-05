@@ -5,12 +5,12 @@ import { register, login, sendRequest, isWebauthnSupported } from 'davidearl-web
 
 const editKey = ( editLabel, opts ) => {
 
-	const { action, payload, _wpnonce } = opts
+	const { action, payload, _wpnonce, user_id } = opts
 
 
 	// console.log($editLabel.prop( 'contenteditable' ));
 	const stopEditing = ( save = false ) => {
-		let newLabel = $(editLabel).text()
+		const newLabel = $(editLabel).text();
 		$(editLabel).text(newLabel)
 		$(editLabel).prop( 'contenteditable', false );
 		$(document).off( 'keydown' )
@@ -22,6 +22,7 @@ const editKey = ( editLabel, opts ) => {
 				{
 					action,
 					payload: { md5id: payload, label: newLabel },
+					user_id,
 					_wpnonce
 				},
 				response => {
