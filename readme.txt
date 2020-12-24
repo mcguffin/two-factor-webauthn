@@ -1,21 +1,22 @@
 === Two Factor WebAuthn ===
-Contributors: #### Your wordpress.org Username ####
-Donate link: #### donate link ####
-Tags: #### donate link ####
+Contributors: podpirate
+Donate link: https://netzpolitik.org/spenden/
+Tags: privay login 2fa
 Requires at least: 4.8
 Requires PHP: 5.6
-Tested up to: 5.4
+Tested up to: 5.6
 Stable tag: 0.1.1
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
-#### Short Description ####
+WebAuthn module for the Two Factor Plugin
 
 == Description ==
 
-WebAuthn module for the [Two Factor](https://github.com/WordPress/two-factor/) WordPress plugin.
+WebAuthn module for the [Two Factor](https://wordpress.org/plugins/two-factor/) WordPress plugin.
 
 = Development =
+
 
 
 == Installation ==
@@ -53,5 +54,5 @@ Either post it on the [GitHub-repo](https://github.com//) or—if you cloned the
 
 == Changelog ==
 
-= 1.0.0 =
+= 0.1.1 =
 Initial Release
