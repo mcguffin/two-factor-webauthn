@@ -9,7 +9,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2021-04-08T06:59:51+00:00\n"
+"POT-Creation-Date: 2021-06-25T14:57:00+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.4.0\n"
 "X-Domain: two-factor-webauthn\n"
@@ -46,105 +46,101 @@ msgstr ""
 msgid "Please authenticate yourself."
 msgstr ""
 
-#: providers/class.two-factor-webauthn.php:187
-msgid "Failed to connect to Authenticator."
+#: providers/class.two-factor-webauthn.php:188
+msgid "Connect to Authenticator"
 msgstr ""
 
-#: providers/class.two-factor-webauthn.php:189
-msgid "Try again"
-msgstr ""
-
-#: providers/class.two-factor-webauthn.php:196
-#: providers/class.two-factor-webauthn.php:286
+#: providers/class.two-factor-webauthn.php:195
+#: providers/class.two-factor-webauthn.php:285
 msgid "Your Browser does not support WebAuthn."
 msgstr ""
 
-#: providers/class.two-factor-webauthn.php:197
+#: providers/class.two-factor-webauthn.php:196
 msgid "Please use a backup method."
 msgstr ""
 
-#: providers/class.two-factor-webauthn.php:274
+#: providers/class.two-factor-webauthn.php:273
 msgid "You can configure hardware authenticators like an USB token or your current device with the button below."
 msgstr ""
 
-#: providers/class.two-factor-webauthn.php:279
+#: providers/class.two-factor-webauthn.php:278
 msgid "Register Device"
 msgstr ""
 
-#: providers/class.two-factor-webauthn.php:320
-#: providers/class.two-factor-webauthn.php:388
-#: providers/class.two-factor-webauthn.php:407
-#: providers/class.two-factor-webauthn.php:441
-#: providers/class.two-factor-webauthn.php:479
+#: providers/class.two-factor-webauthn.php:319
+#: providers/class.two-factor-webauthn.php:387
+#: providers/class.two-factor-webauthn.php:406
+#: providers/class.two-factor-webauthn.php:440
+#: providers/class.two-factor-webauthn.php:478
 msgid "Invalid request"
 msgstr ""
 
-#: providers/class.two-factor-webauthn.php:332
+#: providers/class.two-factor-webauthn.php:331
 msgid "Invalid credential"
 msgstr ""
 
-#: providers/class.two-factor-webauthn.php:339
-#: providers/class.two-factor-webauthn.php:397
-#: providers/class.two-factor-webauthn.php:489
+#: providers/class.two-factor-webauthn.php:338
+#: providers/class.two-factor-webauthn.php:396
+#: providers/class.two-factor-webauthn.php:488
 msgid "Invalid request data"
 msgstr ""
 
-#: providers/class.two-factor-webauthn.php:343
+#: providers/class.two-factor-webauthn.php:342
 msgid "Not allowed to add key"
 msgstr ""
 
 #. translators: %s webauthn app id (domain)
-#: providers/class.two-factor-webauthn.php:355
+#: providers/class.two-factor-webauthn.php:354
 msgid "New Device - %s"
 msgstr ""
 
-#: providers/class.two-factor-webauthn.php:362
+#: providers/class.two-factor-webauthn.php:361
 msgid "Device already Exists"
 msgstr ""
 
-#: providers/class.two-factor-webauthn.php:401
-#: providers/class.two-factor-webauthn.php:455
-#: providers/class.two-factor-webauthn.php:493
+#: providers/class.two-factor-webauthn.php:400
+#: providers/class.two-factor-webauthn.php:454
+#: providers/class.two-factor-webauthn.php:492
 msgid "Operation not permitted"
 msgstr ""
 
-#: providers/class.two-factor-webauthn.php:412
+#: providers/class.two-factor-webauthn.php:411
 msgid "Invalid label"
 msgstr ""
 
-#: providers/class.two-factor-webauthn.php:417
+#: providers/class.two-factor-webauthn.php:416
 msgid "No such key"
 msgstr ""
 
-#: providers/class.two-factor-webauthn.php:428
+#: providers/class.two-factor-webauthn.php:427
 msgid "Could not edit key"
 msgstr ""
 
-#: providers/class.two-factor-webauthn.php:464
+#: providers/class.two-factor-webauthn.php:463
 msgid "Could not delete key"
 msgstr ""
 
-#: providers/class.two-factor-webauthn.php:536
+#: providers/class.two-factor-webauthn.php:535
 msgctxt "Short date format"
 msgid "m/d/Y"
 msgstr ""
 
-#: providers/class.two-factor-webauthn.php:539
+#: providers/class.two-factor-webauthn.php:538
 msgid "Created:"
 msgstr ""
 
-#: providers/class.two-factor-webauthn.php:544
+#: providers/class.two-factor-webauthn.php:543
 msgid "Last used:"
 msgstr ""
 
-#: providers/class.two-factor-webauthn.php:545
+#: providers/class.two-factor-webauthn.php:544
 msgid "- Never -"
 msgstr ""
 
-#: providers/class.two-factor-webauthn.php:554
+#: providers/class.two-factor-webauthn.php:553
 msgid "Test"
 msgstr ""
 
-#: providers/class.two-factor-webauthn.php:568
+#: providers/class.two-factor-webauthn.php:567
 msgid "Delete"
 msgstr ""
