@@ -42,7 +42,7 @@
     "event-stream": "^4.0.1",
     "gulp-autoprefixer": "^6.1.0",
     "gulp-sourcemaps": "^2.6.5",
-    "node-sass": "^5.0.0",
+    "node-sass": "^6.0.1",
     "tinyify": "^2.5.1",
     "uglifyify": "^5.0.2",
     "vinyl-buffer": "^1.0.1",
