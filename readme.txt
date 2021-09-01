@@ -1,7 +1,7 @@
 === Two Factor WebAuthn ===
 Contributors: podpirate
 Donate link: https://netzpolitik.org/spenden/
-Tags: privay login 2fa
+Tags: security,login,2fa,two-factor,fido2
 Requires at least: 4.8
 Requires PHP: 5.6
 Tested up to: 5.6

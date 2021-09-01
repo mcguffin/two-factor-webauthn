@@ -184,9 +184,8 @@ class Two_Factor_Webauthn extends Two_Factor_Provider {
 
 		<div class="webauthn-retry">
 			<p>
-				<?php esc_html_e('Failed to connect to Authenticator.', 'two-factor-webauthn' ); ?>
-				<a href="#" class="webauthn-retry-link">
-					<?php esc_html_e('Try again', 'two-factor-webauthn'); ?>
+				<a href="#" class="webauthn-retry-link button-primary">
+					<?php esc_html_e('Connect to Authenticator', 'two-factor-webauthn'); ?>
 				</a>
 			</p>
 		</div>

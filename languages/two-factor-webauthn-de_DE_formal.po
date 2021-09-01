@@ -5,20 +5,20 @@ msgstr ""
 "Project-Id-Version: Two Factor WebAuthn 0.0.12\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/two-factor-"
 "webauthn\n"
-"POT-Creation-Date: 2020-05-15T06:20:17+00:00\n"
-"PO-Revision-Date: 2020-05-15 08:22+0200\n"
+"POT-Creation-Date: 2021-06-25T14:57:00+00:00\n"
+"PO-Revision-Date: 2021-06-25 17:00+0200\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: de_DE\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Generator: Poedit 2.3\n"
+"X-Generator: Poedit 2.4.1\n"
 "X-Domain: two-factor-webauthn\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
 #. Plugin Name of the plugin
-msgid "Two Factor Web Authentification"
+msgid "Two Factor Web Authentication"
 msgstr ""
 
 #. Plugin URI of the plugin
@@ -53,24 +53,20 @@ msgstr "Beim Erstellen der Authentifizierungsdaten ist ein Fehler aufgetreten."
 msgid "Please authenticate yourself."
 msgstr "Bitte authentifizieren Sie sich."
 
-#: providers/class.two-factor-webauthn.php:187
-msgid "Failed to connect to Authenticator."
-msgstr "Konnte keine Verbindung zum Authentifizierer herstellen."
+#: providers/class.two-factor-webauthn.php:188
+msgid "Connect to Authenticator"
+msgstr "Mit Authentifizierer verbinden"
 
-#: providers/class.two-factor-webauthn.php:189
-msgid "Try again"
-msgstr "Erneut versuchen"
-
-#: providers/class.two-factor-webauthn.php:196
-#: providers/class.two-factor-webauthn.php:286
+#: providers/class.two-factor-webauthn.php:195
+#: providers/class.two-factor-webauthn.php:285
 msgid "Your Browser does not support WebAuthn."
 msgstr "Ihr Browser unterstützt leider kein WebAuthn."
 
-#: providers/class.two-factor-webauthn.php:197
+#: providers/class.two-factor-webauthn.php:196
 msgid "Please use a backup method."
 msgstr "Bitte wählen Sie eine Backup-Methode."
 
-#: providers/class.two-factor-webauthn.php:274
+#: providers/class.two-factor-webauthn.php:273
 msgid ""
 "You can configure hardware authenticators like an USB token or your current "
 "device with the button below."
@@ -78,15 +74,15 @@ msgstr ""
 "Hier können Sie einen Hardware-Authentifizierer registrieren. Z.B. ein USB-"
 "Token oder Ihren Computer."
 
-#: providers/class.two-factor-webauthn.php:279
+#: providers/class.two-factor-webauthn.php:278
 msgid "Register Device"
 msgstr "Gerät registrieren"
 
-#: providers/class.two-factor-webauthn.php:318
-#: providers/class.two-factor-webauthn.php:376
-#: providers/class.two-factor-webauthn.php:384
-#: providers/class.two-factor-webauthn.php:418
-#: providers/class.two-factor-webauthn.php:446
+#: providers/class.two-factor-webauthn.php:319
+#: providers/class.two-factor-webauthn.php:387
+#: providers/class.two-factor-webauthn.php:406
+#: providers/class.two-factor-webauthn.php:440
+#: providers/class.two-factor-webauthn.php:478
 msgid "Invalid request"
 msgstr "Ungültige Anfrage"
 
@@ -94,54 +90,80 @@ msgstr "Ungültige Anfrage"
 msgid "Invalid credential"
 msgstr "Ungültige Zugangsdaten"
 
-#: providers/class.two-factor-webauthn.php:343
-msgid "New Device"
-msgstr "Neues Gerät"
+#: providers/class.two-factor-webauthn.php:338
+#: providers/class.two-factor-webauthn.php:396
+#: providers/class.two-factor-webauthn.php:488
+msgid "Invalid request data"
+msgstr "Ungültige Anfrage"
 
-#: providers/class.two-factor-webauthn.php:350
+#: providers/class.two-factor-webauthn.php:342
+msgid "Not allowed to add key"
+msgstr "Nicht erlaubt neuen Schlüssel anzulegen"
+
+#. translators: %s webauthn app id (domain)
+#: providers/class.two-factor-webauthn.php:354
+msgid "New Device - %s"
+msgstr "Neues Gerät - %s"
+
+#: providers/class.two-factor-webauthn.php:361
 msgid "Device already Exists"
 msgstr "Schlüssel existiert bereits"
 
-#: providers/class.two-factor-webauthn.php:389
+#: providers/class.two-factor-webauthn.php:400
+#: providers/class.two-factor-webauthn.php:454
+#: providers/class.two-factor-webauthn.php:492
+msgid "Operation not permitted"
+msgstr "Aktion nicht erlaubt"
+
+#: providers/class.two-factor-webauthn.php:411
 msgid "Invalid label"
 msgstr "Ungültige Beschriftung"
 
-#: providers/class.two-factor-webauthn.php:394
+#: providers/class.two-factor-webauthn.php:416
 msgid "No such key"
 msgstr "Kein Schlüssel gefunden"
 
-#: providers/class.two-factor-webauthn.php:405
+#: providers/class.two-factor-webauthn.php:427
 msgid "Could not edit key"
 msgstr "Konnte Schlüssel nicht speichern"
 
-#: providers/class.two-factor-webauthn.php:431
+#: providers/class.two-factor-webauthn.php:463
 msgid "Could not delete key"
 msgstr "Konnte Schlüssel nicht löschen"
 
-#: providers/class.two-factor-webauthn.php:491
+#: providers/class.two-factor-webauthn.php:535
 msgctxt "Short date format"
 msgid "m/d/Y"
 msgstr "d.m.Y"
 
-#: providers/class.two-factor-webauthn.php:494
+#: providers/class.two-factor-webauthn.php:538
 msgid "Created:"
 msgstr "Erstellt:"
 
-#: providers/class.two-factor-webauthn.php:499
+#: providers/class.two-factor-webauthn.php:543
 msgid "Last used:"
 msgstr "Zuletzt benutzt:"
 
-#: providers/class.two-factor-webauthn.php:500
+#: providers/class.two-factor-webauthn.php:544
 msgid "- Never -"
 msgstr "– nie –"
 
-#: providers/class.two-factor-webauthn.php:510
+#: providers/class.two-factor-webauthn.php:553
 msgid "Test"
 msgstr "Testen"
 
-#: providers/class.two-factor-webauthn.php:523
+#: providers/class.two-factor-webauthn.php:567
 msgid "Delete"
 msgstr "Löschen"
+
+#~ msgid "Failed to connect to Authenticator."
+#~ msgstr "Konnte keine Verbindung zum Authentifizierer herstellen."
+
+#~ msgid "Try again"
+#~ msgstr "Erneut versuchen"
+
+#~ msgid "New Device"
+#~ msgstr "Neues Gerät"
 
 #~ msgid "Requires an HTTPS connection."
 #~ msgstr "Erfordert eine HTTPS-Verbindung."
