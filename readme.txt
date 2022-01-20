@@ -3,8 +3,8 @@ Contributors: podpirate
 Donate link: https://netzpolitik.org/spenden/
 Tags: security,login,2fa,two-factor,fido2
 Requires at least: 4.8
-Requires PHP: 5.6
-Tested up to: 5.6
+Requires PHP: 7.0
+Tested up to: 5.8
 Stable tag: 0.1.1
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
