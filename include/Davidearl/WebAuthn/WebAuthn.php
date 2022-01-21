@@ -660,9 +660,21 @@ class WebAuthn
                 if (strlen($x) != 32 || strlen($y) != 32) {
                     $this->oops('cannot decode key response (15)');
                 }
+				/**
+				 *	Fired before an ECDSA Key is being registered.
+				 *
+				 *	@param Array $cosePubKey Decoded key from AuthenticatorAssertionResponse.authenticatorData as COSE (rfc8152)
+				 */
+				do_action( 'webauthn_register_key_ecdsa', $cosePubKey );
                 $tag = "\x04";
-                return $this->pubkeyToPem($tag.$x.$y);
-                break;
+                $pem = $this->pubkeyToPem($tag.$x.$y);
+				/**
+				 *	Fired before an RSA Key is being registered. (Windows Hello)
+				 *
+				 *	@param String $pem Decoded key from AuthenticatorAssertionResponse.authenticatorData, COSE rfc8152
+				 */
+				do_action( 'webauthn_registered_key_ecdsa', $pem );
+				return $pem;
             case self::RS256:
                 /* COSE Alg: RSASSA-PKCS1-v1_5 w/ SHA-256 */
                 if (!isset($cosePubKey[-2])) {
@@ -671,10 +683,22 @@ class WebAuthn
                 if (!isset($cosePubKey[-1])) {
                     $this->oops('RSA Modulus missing');
                 }
+				/**
+				 *	Fired before an RSA Key is being registered.
+				 *
+				 *	@param Array $cosePubKey Decoded pubKey from AuthenticatorAssertionResponse.authenticatorData, COSE (rfc8152)
+				 */
+				do_action( 'webauthn_register_key_rsa', $cosePubKey );
                 $e = new BigInteger(bin2hex($cosePubKey[-2]->get_byte_string()), 16);
                 $n = new BigInteger(bin2hex($cosePubKey[-1]->get_byte_string()), 16);
                 $rsa = new RSA();
                 $rsa->loadKey(compact('e', 'n'));
+				/**
+				 *	Fired before an RSA Key is being registered. (Windows Hello)
+				 *
+				 *	@param phpseclib\Crypt\RSA $rsa RSA Key Instance
+				 */
+				do_action( 'webauthn_registered_key_rsa', $rsa );
                 return $rsa->getPublicKey();
             default:
                 $this->oops('cannot decode key response (13)');

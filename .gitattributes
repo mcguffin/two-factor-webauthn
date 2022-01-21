@@ -19,3 +19,4 @@ composer.* export-ignore
 phpcs*.xml export-ignore
 phpunit.* export-ignore
 .phpcs.dist export-ignore
+/test export-ignore
