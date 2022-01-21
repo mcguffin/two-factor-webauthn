@@ -371,7 +371,6 @@ class Two_Factor_Webauthn extends Two_Factor_Provider {
 		wp_send_json([
 			'success' => true,
 			'html' => $this->get_key_item( $key, $user_id ),//'<div>'.$pubKey->name.'</div>',
-			'pubKey' => $pubKey,
 		]);
 	}
 
