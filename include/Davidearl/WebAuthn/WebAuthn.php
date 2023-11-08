@@ -45,6 +45,7 @@ class WebAuthn
 		'register' => false,
 		'prepareRegister' => false,
 	];
+	private $appid;
 
     const ES256 = -7;
     const RS256 = -257; // Windows Hello support
