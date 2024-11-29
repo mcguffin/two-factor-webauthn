@@ -13,6 +13,7 @@ Requires WP: 4.8
 Requires PHP: 5.6
 Text Domain: two-factor-webauthn
 Domain Path: /languages/
+Update URI: https://github.com/mcguffin/two-factor-webauthn/raw/master/.wp-release-info.json
 */
 
 /*  Copyright 2020 joern
@@ -56,3 +57,20 @@ add_filter('two_factor_providers', function( $providers ) {
 add_action('plugins_loaded', function() {
 	load_plugin_textdomain( 'two-factor-webauthn', false, dirname( plugin_basename( __FILE__ ) ) . '/languages' );
 });
+
+
+// Enable WP auto update
+add_filter( 'update_plugins_github.com', function( $update, $plugin_data, $plugin_file, $locales ) {
+
+	if ( ! preg_match( "@{$plugin_file}$@", __FILE__ ) ) { // not our plugin
+		return $update;
+	}
+
+	$response = wp_remote_get( $plugin_data['UpdateURI'] );
+
+	if ( is_wp_error( $response ) || wp_remote_retrieve_response_code( $response ) > 200 ) { // response error
+		return $update;
+	}
+
+	return json_decode( wp_remote_retrieve_body( $response ), true, 512 );
+}, 10, 4 );

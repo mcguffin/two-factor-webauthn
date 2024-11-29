@@ -12,9 +12,10 @@ This plugin is currently in beta stadium. I still hope to have it merged into
 
 Installation
 ------------
-### Production (using Github Updater – recommended for Multisite)
- - Install [Andy Fragen's GitHub Updater](https://github.com/afragen/github-updater) first.
- - In WP Admin go to Settings / GitHub Updater / Install Plugin. Enter `mcguffin/two-factor-webauthn` as a Plugin-URI.
+ - Head over to [releases](../../releases)
+ - Download 'two-factor-webauthn.zip'
+ - Install and activate it like any other WordPress plugin
+ - As long as the plugin is active, it will check for updates
 
 ### Development
 ```

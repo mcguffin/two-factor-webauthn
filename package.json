@@ -101,7 +101,8 @@
   "wporg": {
     "steps": [
       "build",
-      "git"
+      "git",
+      "github"
     ],
     "type": "plugin",
     "build": {
