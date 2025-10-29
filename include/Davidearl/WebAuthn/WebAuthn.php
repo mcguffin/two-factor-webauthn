@@ -47,26 +47,26 @@ class WebAuthn
 	];
 	private $appid;
 
-    const ES256 = -7;
-    const RS256 = -257; // Windows Hello support
-    /**
-    * construct object on which to operate
-    *
-    * @param string $appid a string identifying your app, typically the domain of your website which people
-    *                      are using the key to log in to. If you have the URL (ie including the
-    *                      https:// on the front) to hand, give that;
-    *                      if it's not https, well what are you doing using this code?
-    */
-    public function __construct($appid)
-    {
-        if (! is_string($appid)) {
-            $this->oops('appid must be a string');
-        }
-        $this->appid = $appid;
-        if (strpos($this->appid, 'https://') === 0) {
-            $this->appid = substr($this->appid, 8); /* drop the https:// */
-        }
-    }
+	const ES256 = -7;
+	const RS256 = -257; // Windows Hello support
+	/**
+	 * construct object on which to operate
+	 *
+	 * @param string $appid a string identifying your app, typically the domain of your website which people
+	 *                      are using the key to log in to. If you have the URL (ie including the
+	 *                      https:// on the front) to hand, give that;
+	 *                      if it's not https, well what are you doing using this code?
+	 */
+	public function __construct($appid)
+	{
+		if (! is_string($appid)) {
+			$this->oops('appid must be a string');
+		}
+		$this->appid = $appid;
+		if (strpos($this->appid, 'https://') === 0) {
+			$this->appid = substr($this->appid, 8); /* drop the https:// */
+		}
+	}
 
 	public function getLastError( ?string $realm ) {
 		if ( is_null( $realm ) ) {
@@ -81,70 +81,70 @@ class WebAuthn
 		return $this->last_error[ $realm ];
 	}
 
-    /**
-    * generate a challenge ready for registering a hardware key, fingerprint or whatever:
-    * @param $username string by which the user is known potentially displayed on the hardware key
-    * @param $userid string by which the user can be uniquely identified. Don't use email address as this can change,
-    *                user perhaps the database record id
-    * @param $crossPlatform bool default=FALSE, whether to link the identity to the key (TRUE, so it
-    *               can be used cross-platofrm, on different computers) or the platform (FALSE, only on
-    *               this computer, but with any available authentication device, e.g. known to Windows Hello)
-    * @return string pass this JSON string back to the browser
-    */
-  public function prepareRegister($username, $userid, $crossPlatform = FALSE)
-    {
-        $result = (object) [];
-        $rbchallenge = self::randomBytes(16);
-        $result->challenge = self::stringToArray($rbchallenge);
-        $result->user = (object) [];
-        $result->user->name = $result->user->displayName = $username;
-        $result->user->id = self::stringToArray($userid);
+	/**
+	 * generate a challenge ready for registering a hardware key, fingerprint or whatever:
+	 * @param $username string by which the user is known potentially displayed on the hardware key
+	 * @param $userid string by which the user can be uniquely identified. Don't use email address as this can change,
+	 *                user perhaps the database record id
+	 * @param $crossPlatform bool default=FALSE, whether to link the identity to the key (TRUE, so it
+	 *               can be used cross-platofrm, on different computers) or the platform (FALSE, only on
+	 *               this computer, but with any available authentication device, e.g. known to Windows Hello)
+	 * @return string pass this JSON string back to the browser
+	 */
+	public function prepareRegister($username, $userid, $crossPlatform = FALSE)
+	{
+		$result = (object) [];
+		$rbchallenge = self::randomBytes(16);
+		$result->challenge = self::stringToArray($rbchallenge);
+		$result->user = (object) [];
+		$result->user->name = $result->user->displayName = $username;
+		$result->user->id = self::stringToArray($userid);
 
-        $result->rp = (object) [];
-        $result->rp->name = $result->rp->id = $this->appid;
+		$result->rp = (object) [];
+		$result->rp->name = $result->rp->id = $this->appid;
 
-        $result->pubKeyCredParams = [
-            [
-                'alg' => self::ES256,
-                'type' => 'public-key'
-            ],
-            [
-                'alg' => self::RS256,
-                'type' => 'public-key'
-            ]
-        ];
+		$result->pubKeyCredParams = [
+			[
+				'alg' => self::ES256,
+				'type' => 'public-key'
+			],
+			[
+				'alg' => self::RS256,
+				'type' => 'public-key'
+			]
+		];
 
-        $result->authenticatorSelection = (object) [];
-        if ( $crossPlatform ) {
+		$result->authenticatorSelection = (object) [];
+		if ( $crossPlatform ) {
 			$result->authenticatorSelection->authenticatorAttachment = 'cross-platform';
 		}
 
-        $result->authenticatorSelection->requireResidentKey = false;
-        $result->authenticatorSelection->userVerification = 'discouraged';
+		$result->authenticatorSelection->requireResidentKey = false;
+		$result->authenticatorSelection->userVerification = 'discouraged';
 
-        $result->attestation = null;
-        $result->timeout = 60000;
-        $result->excludeCredentials = []; // No excludeList
-        $result->extensions = (object) [];
-        $result->extensions->exts = true;
+		$result->attestation = null;
+		$result->timeout = 60000;
+		$result->excludeCredentials = []; // No excludeList
+		$result->extensions = (object) [];
+		$result->extensions->exts = true;
 
-        return [
+		return [
 			'publicKey' => $result,
-        	'b64challenge' => rtrim(strtr(base64_encode($rbchallenge), '+/', '-_'), '=')
+			'b64challenge' => rtrim(strtr(base64_encode($rbchallenge), '+/', '-_'), '=')
 		];
-    }
+	}
 
-    /**
-    * registers a new key for a user
-    * requires info from the hardware via javascript given below
-    * @param object $info supplied to the PHP script via a POST, constructed by the Javascript given below, ultimately
-    *        provided by the key
-    * @param string $userwebauthn the exisitng webauthn field for the user from your
-    *        database (it's actaully a JSON string, but that's entirely internal to
-    *        this code)
-    * @return boolean|object user key
-    */
-    public function register( object $info ) {
+	/**
+	 * registers a new key for a user
+	 * requires info from the hardware via javascript given below
+	 * @param object $info supplied to the PHP script via a POST, constructed by the Javascript given below, ultimately
+	 *        provided by the key
+	 * @param string $userwebauthn the exisitng webauthn field for the user from your
+	 *        database (it's actaully a JSON string, but that's entirely internal to
+	 *        this code)
+	 * @return boolean|object user key
+	 */
+	public function register( object $info ) {
 
 		$this->last_call = __FUNCTION__;
 
@@ -156,8 +156,8 @@ class WebAuthn
 			return false;
 		}
 
-        /* check response from key and store as new identity. This is a hex string representing the raw CBOR
-        attestation object received from the key */
+		/* check response from key and store as new identity. This is a hex string representing the raw CBOR
+		attestation object received from the key */
 
 		$attData = $this->parseAttestationObject( $info->response->attestationObject );
 
@@ -167,31 +167,31 @@ class WebAuthn
 			return false;
 		}
 
-        if ( $attData->credId !== self::arrayToString( $info->rawId ) ) {
+		if ( $attData->credId !== self::arrayToString( $info->rawId ) ) {
 			$this->last_error[ $this->last_call ] = 'ao-id-mismatch';
 			return false;
-        }
+		}
 
-        return (object) [
+		return (object) [
 			'key' => $attData->keyBytes,
 			'id' => $info->rawId,
 		];
 
-    }
+	}
 
-    /**
-    * generates a new key string for the physical key, fingerprint
-    * reader or whatever to respond to on login
-    * @param array $userKeys the existing webauthn field for the user from your database
-    * @return boolean|object Object to pass to javascript webauthnAuthenticate or false on faliue
-    */
-    public function prepareAuthenticate( array $userKeys = [] )
-    {
+	/**
+	 * generates a new key string for the physical key, fingerprint
+	 * reader or whatever to respond to on login
+	 * @param array $userKeys the existing webauthn field for the user from your database
+	 * @return boolean|object Object to pass to javascript webauthnAuthenticate or false on faliue
+	 */
+	public function prepareAuthenticate( array $userKeys = [] )
+	{
 		$allowKeyDefaults = [
 			'transports' =>  [ 'usb','nfc','ble','internal' ],
 			'type' => 'public-key',
 		];
-        $allows = [];
+		$allows = [];
 		foreach ( $userKeys as $key) {
 			if ( $this->isValidKey( $key ) ) {
 				$allows[] = (object) ( [
@@ -200,39 +200,39 @@ class WebAuthn
 			}
 		}
 
-        if ( ! count( $allows ) ) {
-            /* including empty user, so they can't tell whether the user exists or not (need same result each
-            time for each user) */
-            $rb = md5( (string) time() );
-            $allows[] = (object) ([
+		if ( ! count( $allows ) ) {
+			/* including empty user, so they can't tell whether the user exists or not (need same result each
+			time for each user) */
+			$rb = md5( (string) time() );
+			$allows[] = (object) ([
 				'id' => self::stringToArray( $rb ),
 			] + $allowKeyDefaults);
-        }
+		}
 
-        /* generate key request */
-        $publickey = (object) [];
-        $publickey->challenge = self::stringToArray( self::randomBytes(16) );
-        $publickey->timeout = 60000;
-        $publickey->allowCredentials = $allows;
-        $publickey->userVerification = 'discouraged';
-        $publickey->extensions = (object)array();
-        // $publickey->extensions->txAuthSimple = 'Execute order 66';
-        $publickey->rpId = str_replace('https://', '', $this->appid );
+		/* generate key request */
+		$publickey = (object) [];
+		$publickey->challenge = self::stringToArray( self::randomBytes(16) );
+		$publickey->timeout = 60000;
+		$publickey->allowCredentials = $allows;
+		$publickey->userVerification = 'discouraged';
+		$publickey->extensions = (object)array();
+		// $publickey->extensions->txAuthSimple = 'Execute order 66';
+		$publickey->rpId = str_replace('https://', '', $this->appid );
 
-        return $publickey;
-    }
+		return $publickey;
+	}
 
-    /**
-    * validates a response for login or 2fa
-    * requires info from the hardware via javascript given below
-    * @param object $info supplied to the PHP script via POST, constructed by the Javascript given below, ultimately
-    *        provided by the key
-    * @param array $userKeys the exisiting webauthn field for the user from your
-    *        database
-    * @return object|null the matching key object from $userKeys for a valid authentication, null otherwise
-    */
-    public function authenticate( object $info, array $userKeys )
-    {
+	/**
+	 * validates a response for login or 2fa
+	 * requires info from the hardware via javascript given below
+	 * @param object $info supplied to the PHP script via POST, constructed by the Javascript given below, ultimately
+	 *        provided by the key
+	 * @param array $userKeys the exisiting webauthn field for the user from your
+	 *        database
+	 * @return object|null the matching key object from $userKeys for a valid authentication, null otherwise
+	 */
+	public function authenticate( object $info, array $userKeys )
+	{
 
 		$this->last_call = __FUNCTION__;
 
@@ -240,7 +240,7 @@ class WebAuthn
 
 		// check info
 		if ( ! $this->validateAuthenticateInfo( $info ) ) {
-//			$this->last_error['authenticate'] = 'invalid-authenticate-info';
+			//			$this->last_error['authenticate'] = 'invalid-authenticate-info';
 			return false;
 		}
 
@@ -252,54 +252,54 @@ class WebAuthn
 		}
 
 
-        $bs = self::arrayToString( $info->response->authenticatorData );
-        $ao = (object)array();
+		$bs = self::arrayToString( $info->response->authenticatorData );
+		$ao = (object)array();
 
-        $ao->rpIdHash = substr( $bs, 0, 32 );
-        $ao->flags = ord( substr( $bs, 32, 1 ) );
-        $ao->counter = substr( $bs, 33, 4 );
+		$ao->rpIdHash = substr( $bs, 0, 32 );
+		$ao->flags = ord( substr( $bs, 32, 1 ) );
+		$ao->counter = substr( $bs, 33, 4 );
 
-        $hashId = hash( 'sha256', $this->appid, true );
+		$hashId = hash( 'sha256', $this->appid, true );
 
-        if ( $hashId !== $ao->rpIdHash ) {
+		if ( $hashId !== $ao->rpIdHash ) {
 			$this->last_error[ $this->last_call ] = 'key-response-decode-hash-mismatch';
-			return false;
-        }
-
-        /* experience shows that at least one device (OnePlus 6T/Pie (Android phone)) doesn't set this,
-        so this test would fail. This is not correct according to the spec, so  pragmatically it may
-        have to be removed */
-        if ( ( $ao->flags & 0x1 ) != 0x1 ) {
-			$this->last_error[ $this->last_call ] = 'key-response-decode-flags-mismatch';
-			return false;
-        } /* only TUP must be set */
-
-        /* assemble signed data */
-        $clientdata = self::arrayToString( $info->response->clientDataJSONarray );
-        $signeddata = $hashId . chr( $ao->flags ) . $ao->counter . hash( 'sha256', $clientdata, true );
-
-        if (count( $info->response->signature ) < 70) {
-			$this->last_error[ $this->last_call ] = 'key-response-decode-signature-invalid';
-			return false;
-        }
-
-        $signature = self::arrayToString($info->response->signature);
-
-		$verify_result = openssl_verify( $signeddata, $signature, $key->key, OPENSSL_ALGO_SHA256 );
-
-		if ( 1 === $verify_result ) {
-			$this->last_error[ $this->last_call ] = false;
-			return $key;
-		} else if ( 0 === $verify_result ) {
-			$this->last_error[ $this->last_call ] = 'key-not-verfied';
 			return false;
 		}
 
-		$this->last_error[ $this->last_call ] = openssl_error_string();
+		/* experience shows that at least one device (OnePlus 6T/Pie (Android phone)) doesn't set this,
+		so this test would fail. This is not correct according to the spec, so  pragmatically it may
+		have to be removed */
+		if ( ( $ao->flags & 0x1 ) != 0x1 ) {
+			$this->last_error[ $this->last_call ] = 'key-response-decode-flags-mismatch';
+			return false;
+		} /* only TUP must be set */
 
-		return false;
+	/* assemble signed data */
+	$clientdata = self::arrayToString( $info->response->clientDataJSONarray );
+	$signeddata = $hashId . chr( $ao->flags ) . $ao->counter . hash( 'sha256', $clientdata, true );
 
-    }
+	if (count( $info->response->signature ) < 70) {
+	$this->last_error[ $this->last_call ] = 'key-response-decode-signature-invalid';
+	return false;
+	}
+
+	$signature = self::arrayToString($info->response->signature);
+
+	$verify_result = openssl_verify( $signeddata, $signature, $key->key, OPENSSL_ALGO_SHA256 );
+
+	if ( 1 === $verify_result ) {
+	$this->last_error[ $this->last_call ] = false;
+	return $key;
+	} else if ( 0 === $verify_result ) {
+	$this->last_error[ $this->last_call ] = 'key-not-verfied';
+	return false;
+	}
+
+	$this->last_error[ $this->last_call ] = openssl_error_string();
+
+	return false;
+
+	}
 
 	/**
 	 *	Parse and validate Attestation object
@@ -321,20 +321,20 @@ class WebAuthn
 			return false;
 		}
 
-        if ( empty( $ao ) ) {
+		if ( empty( $ao ) ) {
 			$this->last_error[ $this->last_call ] = 'ao-empty';
 			return false;
-        }
+		}
 
-        if ( ! isset( $ao->fmt, $ao->authData ) ) {
+		if ( ! isset( $ao->fmt, $ao->authData ) ) {
 			$this->last_error[ $this->last_call ] = 'ao-missing-property';
 			return false;
-        }
+		}
 
 		if ( ! is_string( $ao->fmt ) ) {
 			$this->last_error[ $this->last_call ] = 'ao-fmt-invalid';
 			return false;
-        }
+		}
 		if ( ! ( $ao->authData instanceof \CBOR\Types\CBORByteString ) ) {
 			$this->last_error[ $this->last_call ] = 'ao-authdata-invalid';
 			return false;
@@ -358,23 +358,23 @@ class WebAuthn
 			'flags' => ord(substr($bs, 32, 1)),
 			'signCount' => substr($bs, 33, 4),
 		];
-		//
-        // $ao->rpIdHash = substr($bs, 0, 32);
-        // $ao->flags = ord(substr($bs, 32, 1));
-        // $ao->signCount = substr($bs, 33, 4);
+
+		// $ao->rpIdHash = substr($bs, 0, 32);
+		// $ao->flags = ord(substr($bs, 32, 1));
+		// $ao->signCount = substr($bs, 33, 4);
 
 		if ( ! ( $authData->flags & 0x41 ) ) {
 			$this->last_error[ $this->last_call ] = 'ao-flags-unsupported';
 			return false;
-        } /* TUP and AT must be set */
+		} /* TUP and AT must be set */
 
 
-        $hashId = hash('sha256', $this->appid, true);
+		$hashId = hash('sha256', $this->appid, true);
 
-        if ( $hashId != $authData->rpIdHash ) {
+		if ( $hashId != $authData->rpIdHash ) {
 			$this->last_error[ $this->last_call ] = 'ao-appid-mismatch';
 			return false;
-        }
+		}
 
 		$attData = (object) [
 			'aaguid' => substr($bs, 37, 16),
@@ -469,11 +469,11 @@ class WebAuthn
 
 		// check existence 3rd level
 		if ( ! isset(
-				$info->response->clientData->challenge,
-				$info->response->clientData->origin,
-				$info->response->clientData->type
+			$info->response->clientData->challenge,
+			$info->response->clientData->origin,
+			$info->response->clientData->type
 			)
-	 	) {
+		) {
 			$this->last_error[ $this->last_call ] = 'info-clientdata-missing-property';
 			return false;
 		}
@@ -483,7 +483,7 @@ class WebAuthn
 			! is_string( $info->response->clientData->challenge ) ||
 			! is_string( $info->response->clientData->origin ) ||
 			! is_string( $info->response->clientData->type )
-	 	) {
+		) {
 			$this->last_error[ $this->last_call ] = 'info-clientdata-malformed-value';
 			return false;
 		}
@@ -491,26 +491,26 @@ class WebAuthn
 		if ( $info->response->clientData->type != 'webauthn.get') {
 			$this->last_error[ $this->last_call ] = "info-wrong-type";
 			return false;
-        }
+		}
 
 
 		/* cross-check challenge */
-        if ( $info->response->clientData->challenge
-					!==
+		if ( $info->response->clientData->challenge
+			!==
 			rtrim( strtr( base64_encode( self::arrayToString( $info->originalChallenge ) ), '+/', '-_'), '=')
 		) {
 			$this->last_error[ $this->last_call ] = 'info-challenge-mismatch';
 			return false;
-        }
+		}
 
 		/* cross check origin */
-        $origin = parse_url( $info->response->clientData->origin );
+		$origin = parse_url( $info->response->clientData->origin );
 
-        if ( strpos( $origin['host'], $this->appid ) !== ( strlen( $origin['host'] ) - strlen( $this->appid ) ) ) {
+		if ( strpos( $origin['host'], $this->appid ) !== ( strlen( $origin['host'] ) - strlen( $this->appid ) ) ) {
 
 			$this->last_error[ $this->last_call ] = 'info-origin-mismatch';
 			return false;
-        }
+		}
 
 
 		return true;
@@ -528,15 +528,15 @@ class WebAuthn
 
 		$keyIdString = implode( ',', $keyId );
 
-        foreach ( $keys as $key ) {
+		foreach ( $keys as $key ) {
 			// check for key format
 			if ( ! $this->isValidKey( $key ) ) {
 				continue;
 			}
-            if ( implode(',', $key->id ) === $keyIdString ) {
-                return $key;
-            }
-        }
+			if ( implode(',', $key->id ) === $keyIdString ) {
+				return $key;
+			}
+		}
 		return false;
 	}
 
@@ -549,126 +549,126 @@ class WebAuthn
 	}
 
 
-    /**
-    * convert an array of uint8's to a binary string
-    * @param array $a to be converted (array of unsigned 8 bit integers)
-    * @return string converted to bytes
-    */
-    private static function arrayToString($a)
-    {
-        $s = '';
-        foreach ($a as $c) {
-            $s .= chr($c);
-        }
-        return $s;
-    }
+	/**
+	 * convert an array of uint8's to a binary string
+	 * @param array $a to be converted (array of unsigned 8 bit integers)
+	 * @return string converted to bytes
+	 */
+	private static function arrayToString($a)
+	{
+		$s = '';
+		foreach ($a as $c) {
+			$s .= chr($c);
+		}
+		return $s;
+	}
 
-    /**
-    * convert a binary string to an array of uint8's
-    * @param string $s to be converted
-    * @return array converted to array of unsigned integers
-    */
-    private static function stringToArray($s)
-    {
-        /* convert binary string to array of uint8 */
-        $a = [];
-        for ($idx = 0; $idx < strlen($s); $idx++) {
-            $a[] = ord($s[$idx]);
-        }
-        return $a;
-    }
+	/**
+	 * convert a binary string to an array of uint8's
+	 * @param string $s to be converted
+	 * @return array converted to array of unsigned integers
+	 */
+	private static function stringToArray($s)
+	{
+		/* convert binary string to array of uint8 */
+		$a = [];
+		for ($idx = 0; $idx < strlen($s); $idx++) {
+			$a[] = ord($s[$idx]);
+		}
+		return $a;
+	}
 
-    /**
-    * convert a public key from the hardware to PEM format
-    * @param string $key to be converted to PEM format
-    * @return string converted to PEM format
-    */
-    private function pubkeyToPem($key)
-    {
-        /* see https://github.com/Yubico/php-u2flib-server/blob/master/src/u2flib_server/U2F.php */
-        if (strlen($key) !== 65 || $key[0] !== "\x04") {
-            return null;
-        }
-        /*
-        * Convert the public key to binary DER format first
-        * Using the ECC SubjectPublicKeyInfo OIDs from RFC 5480
-        *
-        *  SEQUENCE(2 elem)                        30 59
-        *   SEQUENCE(2 elem)                       30 13
-        *    OID1.2.840.10045.2.1 (id-ecPublicKey) 06 07 2a 86 48 ce 3d 02 01
-        *    OID1.2.840.10045.3.1.7 (secp256r1)    06 08 2a 86 48 ce 3d 03 01 07
-        *   BIT STRING(520 bit)                    03 42 ..key..
-        */
-        $der  = "\x30\x59\x30\x13\x06\x07\x2a\x86\x48\xce\x3d\x02\x01";
-        $der .= "\x06\x08\x2a\x86\x48\xce\x3d\x03\x01\x07\x03\x42";
-        $der .= "\x00".$key;
-        $pem  = "-----BEGIN PUBLIC KEY-----\x0A";
-        $pem .= chunk_split(base64_encode($der), 64, "\x0A");
-        $pem .= "-----END PUBLIC KEY-----\x0A";
-        return $pem;
-    }
+	/**
+	 * convert a public key from the hardware to PEM format
+	 * @param string $key to be converted to PEM format
+	 * @return string converted to PEM format
+	 */
+	private function pubkeyToPem($key)
+	{
+		/* see https://github.com/Yubico/php-u2flib-server/blob/master/src/u2flib_server/U2F.php */
+		if (strlen($key) !== 65 || $key[0] !== "\x04") {
+			return null;
+		}
+		/*
+		 * Convert the public key to binary DER format first
+		 * Using the ECC SubjectPublicKeyInfo OIDs from RFC 5480
+		 *
+		 *  SEQUENCE(2 elem)                        30 59
+		 *   SEQUENCE(2 elem)                       30 13
+		 *    OID1.2.840.10045.2.1 (id-ecPublicKey) 06 07 2a 86 48 ce 3d 02 01
+		 *    OID1.2.840.10045.3.1.7 (secp256r1)    06 08 2a 86 48 ce 3d 03 01 07
+		 *   BIT STRING(520 bit)                    03 42 ..key..
+		 */
+		$der  = "\x30\x59\x30\x13\x06\x07\x2a\x86\x48\xce\x3d\x02\x01";
+		$der .= "\x06\x08\x2a\x86\x48\xce\x3d\x03\x01\x07\x03\x42";
+		$der .= "\x00".$key;
+		$pem  = "-----BEGIN PUBLIC KEY-----\x0A";
+		$pem .= chunk_split(base64_encode($der), 64, "\x0A");
+		$pem .= "-----END PUBLIC KEY-----\x0A";
+		return $pem;
+	}
 
-    /**
-     * Convert COSE ECDHA to PKCS
-     * @param string binary string to be converted
-     * @return string converted public key
-     */
-    private function COSEECDHAtoPKCS($binary)
-    {
-        $cosePubKey = \CBOR\CBOREncoder::decode($binary);
+	/**
+	 * Convert COSE ECDHA to PKCS
+	 * @param string binary string to be converted
+	 * @return string converted public key
+	 */
+	private function COSEECDHAtoPKCS($binary)
+	{
+		$cosePubKey = \CBOR\CBOREncoder::decode($binary);
 
-        if (! isset($cosePubKey[3] /* cose_alg */)) {
-            $this->oops('cannot decode key response (8)');
-        }
+		if (! isset($cosePubKey[3] /* cose_alg */)) {
+			$this->oops('cannot decode key response (8)');
+		}
 
-        switch ($cosePubKey[3]) {
-            case self::ES256:
-                /* COSE Alg: ECDSA w/ SHA-256 */
-                if (! isset($cosePubKey[-1] /* cose_crv */)) {
-                    $this->oops('cannot decode key response (9)');
-                }
+		switch ($cosePubKey[3]) {
+			case self::ES256:
+				/* COSE Alg: ECDSA w/ SHA-256 */
+				if (! isset($cosePubKey[-1] /* cose_crv */)) {
+					$this->oops('cannot decode key response (9)');
+				}
 
-                if (! isset($cosePubKey[-2] /* cose_crv_x */)) {
-                    $this->oops('cannot decode key response (10)');
-                }
+				if (! isset($cosePubKey[-2] /* cose_crv_x */)) {
+					$this->oops('cannot decode key response (10)');
+				}
 
-                if ($cosePubKey[-1] != 1 /* cose_crv_P256 */) {
-                    $this->oops('cannot decode key response (14)');
-                }
+				if ($cosePubKey[-1] != 1 /* cose_crv_P256 */) {
+					$this->oops('cannot decode key response (14)');
+				}
 
-                if (!isset($cosePubKey[-2] /* cose_crv_x */)) {
-                    $this->oops('x coordinate for curve missing');
-                }
+				if (!isset($cosePubKey[-2] /* cose_crv_x */)) {
+					$this->oops('x coordinate for curve missing');
+				}
 
-                if (! isset($cosePubKey[1] /* cose_kty */)) {
-                    $this->oops('cannot decode key response (7)');
-                }
+				if (! isset($cosePubKey[1] /* cose_kty */)) {
+					$this->oops('cannot decode key response (7)');
+				}
 
-                if (! isset($cosePubKey[-3] /* cose_crv_y */)) {
-                    $this->oops('cannot decode key response (11)');
-                }
+				if (! isset($cosePubKey[-3] /* cose_crv_y */)) {
+					$this->oops('cannot decode key response (11)');
+				}
 
-                if (!isset($cosePubKey[-3] /* cose_crv_y */)) {
-                    $this->oops('y coordinate for curve missing');
-                }
+				if (!isset($cosePubKey[-3] /* cose_crv_y */)) {
+					$this->oops('y coordinate for curve missing');
+				}
 
-                if ($cosePubKey[1] != 2 /* cose_kty_ec2 */) {
-                    $this->oops('cannot decode key response (12)');
-                }
+				if ($cosePubKey[1] != 2 /* cose_kty_ec2 */) {
+					$this->oops('cannot decode key response (12)');
+				}
 
-                $x = $cosePubKey[-2]->get_byte_string();
-                $y = $cosePubKey[-3]->get_byte_string();
-                if (strlen($x) != 32 || strlen($y) != 32) {
-                    $this->oops('cannot decode key response (15)');
-                }
+				$x = $cosePubKey[-2]->get_byte_string();
+				$y = $cosePubKey[-3]->get_byte_string();
+				if (strlen($x) != 32 || strlen($y) != 32) {
+					$this->oops('cannot decode key response (15)');
+				}
 				/**
 				 *	Fired before an ECDSA Key is being registered.
 				 *
 				 *	@param Array $cosePubKey Decoded key from AuthenticatorAssertionResponse.authenticatorData as COSE (rfc8152)
 				 */
 				do_action( 'webauthn_register_key_ecdsa', $cosePubKey );
-                $tag = "\x04";
-                $pem = $this->pubkeyToPem($tag.$x.$y);
+				$tag = "\x04";
+				$pem = $this->pubkeyToPem($tag.$x.$y);
 				/**
 				 *	Fired before an RSA Key is being registered. (Windows Hello)
 				 *
@@ -676,69 +676,65 @@ class WebAuthn
 				 */
 				do_action( 'webauthn_registered_key_ecdsa', $pem );
 				return $pem;
-            case self::RS256:
-                /* COSE Alg: RSASSA-PKCS1-v1_5 w/ SHA-256 */
-                if (!isset($cosePubKey[-2])) {
-                    $this->oops('RSA Exponent missing');
-                }
-                if (!isset($cosePubKey[-1])) {
-                    $this->oops('RSA Modulus missing');
-                }
+			case self::RS256:
+				/* COSE Alg: RSASSA-PKCS1-v1_5 w/ SHA-256 */
+				if (!isset($cosePubKey[-2])) {
+					$this->oops('RSA Exponent missing');
+				}
+				if (!isset($cosePubKey[-1])) {
+					$this->oops('RSA Modulus missing');
+				}
 				/**
 				 *	Fired before an RSA Key is being registered.
 				 *
 				 *	@param Array $cosePubKey Decoded pubKey from AuthenticatorAssertionResponse.authenticatorData, COSE (rfc8152)
 				 */
 				do_action( 'webauthn_register_key_rsa', $cosePubKey );
-                $e = new BigInteger(bin2hex($cosePubKey[-2]->get_byte_string()), 16);
-                $n = new BigInteger(bin2hex($cosePubKey[-1]->get_byte_string()), 16);
-                $rsa = new RSA();
-                $rsa->loadKey(compact('e', 'n'));
+				$e = new BigInteger(bin2hex($cosePubKey[-2]->get_byte_string()), 16);
+				$n = new BigInteger(bin2hex($cosePubKey[-1]->get_byte_string()), 16);
+				$rsa = new RSA();
+				$rsa->loadKey(compact('e', 'n'));
 				/**
 				 *	Fired before an RSA Key is being registered. (Windows Hello)
 				 *
 				 *	@param phpseclib\Crypt\RSA $rsa RSA Key Instance
 				 */
 				do_action( 'webauthn_registered_key_rsa', $rsa );
-                return $rsa->getPublicKey();
-            default:
-                $this->oops('cannot decode key response (13)');
-        }
-    }
+				return $rsa->getPublicKey();
+			default:
+				$this->oops('cannot decode key response (13)');
+		}
+	}
 
-    /**
-    * shim for random_bytes which doesn't exist pre php7
-    * @param int $length the number of bytes required
-    * @return string length cryptographically random bytes
-    */
-    private static function randomBytes($length)
-    {
-      if (function_exists('random_bytes')) {
-          return random_bytes($length);
-      } else if (function_exists('openssl_random_pseudo_bytes')) {
-          $bytes = openssl_random_pseudo_bytes($length, $crypto_strong);
-          if (! $crypto_strong) {
-              throw new \Exception("openssl_random_pseudo_bytes did not return a cryptographically strong result", 1);
-          }
-          return $bytes;
-      } else {
-          throw new \Exception("Neither random_bytes not openssl_random_pseudo_bytes exists. PHP too old? openssl PHP extension not installed?", 1);
-      }
-    }
+	/**
+	 * shim for random_bytes which doesn't exist pre php7
+	 * @param int $length the number of bytes required
+	 * @return string length cryptographically random bytes
+	 */
+	private static function randomBytes($length)
+	{
+		if (function_exists('random_bytes')) {
+			return random_bytes($length);
+		} else if (function_exists('openssl_random_pseudo_bytes')) {
+			$bytes = openssl_random_pseudo_bytes($length, $crypto_strong);
+			if (! $crypto_strong) {
+				throw new \Exception("openssl_random_pseudo_bytes did not return a cryptographically strong result", 1);
+			}
+			return $bytes;
+		} else {
+			throw new \Exception("Neither random_bytes not openssl_random_pseudo_bytes exists. PHP too old? openssl PHP extension not installed?", 1);
+		}
+	}
 
-    /**
-    * just an abbreviation to throw an error: never returns
-    * @param string $s error message
-    * @param int $c error code (0 for user error, 1 for incorrect usage)
-    *
-    */
-    private function oops($s, $c=0)
-    {
-        error_log("oops: {$s} {$c}");
-        throw new \Exception($s, $c);
-    }
-
-    protected function getUrlSuffix()
-    {
-    }
+	/**
+	 * just an abbreviation to throw an error: never returns
+	 * @param string $s error message
+	 * @param int $c error code (0 for user error, 1 for incorrect usage)
+	 *
+	 */
+	private function oops($s, $c=0)
+	{
+		error_log("oops: {$s} {$c}");
+		throw new \Exception($s, $c);
+	}
 }
