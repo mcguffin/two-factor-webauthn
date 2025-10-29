@@ -68,7 +68,7 @@ class WebAuthn
         }
     }
 
-	public function getLastError( string $realm = NULL ) {
+	public function getLastError( ?string $realm ) {
 		if ( is_null( $realm ) ) {
 			$realm = $this->last_call;
 		}
